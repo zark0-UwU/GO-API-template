@@ -1,8 +1,8 @@
 package models
 
 import (
-	"ToDoList/src/services"
 	"fmt"
+	"template/src/services"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

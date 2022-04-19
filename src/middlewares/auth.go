@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"ToDoList/src/config"
+	"template/src/config"
 
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v2"

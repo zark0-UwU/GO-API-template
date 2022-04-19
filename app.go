@@ -1,8 +1,8 @@
 package main
 
 import (
-	"ToDoList/src"
 	"log"
+	"template/src"
 )
 
 func main() {

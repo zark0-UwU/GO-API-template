@@ -1,10 +1,10 @@
 package users
 
 import (
-	"ToDoList/src/models"
-	"ToDoList/src/services"
 	"log"
 	"strconv"
+	"template/src/models"
+	"template/src/services"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"

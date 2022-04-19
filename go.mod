@@ -1,4 +1,4 @@
-module ToDoList
+module template
 
 go 1.15
 

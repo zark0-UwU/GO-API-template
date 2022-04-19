@@ -1,9 +1,9 @@
 package loaders
 
 import (
-	"ToDoList/src/models"
-	"ToDoList/src/services"
 	"context"
+	"template/src/models"
+	"template/src/services"
 )
 
 func LoadMongo() *context.CancelFunc {

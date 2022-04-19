@@ -1,8 +1,8 @@
 package src
 
 import (
-	"ToDoList/src/config"
-	"ToDoList/src/loaders"
+	"template/src/config"
+	"template/src/loaders"
 )
 
 func Start() {

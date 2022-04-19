@@ -1,9 +1,9 @@
 package users
 
 import (
-	"ToDoList/src/config"
-	"ToDoList/src/models"
 	"context"
+	"template/src/config"
+	"template/src/models"
 	"time"
 
 	"github.com/gofiber/fiber/v2"

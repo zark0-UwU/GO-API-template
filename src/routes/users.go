@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"ToDoList/src/handlers/users"
+	"template/src/handlers/users"
 
 	"github.com/gofiber/fiber/v2"
 )

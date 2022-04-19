@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"ToDoList/src/middlewares"
+	"template/src/middlewares"
 
 	"github.com/gofiber/fiber/v2"
 )
