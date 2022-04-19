@@ -2,9 +2,10 @@ package users
 
 import (
 	"context"
-	"template/src/config"
-	"template/src/models"
 	"time"
+
+	"GO-API-template/src/config"
+	"GO-API-template/src/models"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"

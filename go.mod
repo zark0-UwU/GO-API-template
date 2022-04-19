@@ -1,4 +1,4 @@
-module template
+module GO-API-template
 
 go 1.15
 

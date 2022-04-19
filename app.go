@@ -2,7 +2,8 @@ package main
 
 import (
 	"log"
-	"template/src"
+
+	"GO-API-template/src"
 )
 
 func main() {

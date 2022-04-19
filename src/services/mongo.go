@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"template/src/config"
+	"GO-API-template/src/config"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

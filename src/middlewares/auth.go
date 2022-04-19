@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"template/src/config"
+	"GO-API-template/src/config"
 
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v2"

@@ -1,7 +1,7 @@
 package loaders
 
 import (
-	"template/src/routes"
+	"GO-API-template/src/routes"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"

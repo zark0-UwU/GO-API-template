@@ -2,8 +2,9 @@ package loaders
 
 import (
 	"context"
-	"template/src/models"
-	"template/src/services"
+
+	"GO-API-template/src/models"
+	"GO-API-template/src/services"
 )
 
 func LoadMongo() *context.CancelFunc {

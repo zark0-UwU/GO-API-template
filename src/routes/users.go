@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"template/src/handlers/users"
+	"GO-API-template/src/handlers/users"
 
 	"github.com/gofiber/fiber/v2"
 )

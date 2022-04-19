@@ -1,8 +1,8 @@
 package src
 
 import (
-	"template/src/config"
-	"template/src/loaders"
+	"GO-API-template/src/config"
+	"GO-API-template/src/loaders"
 )
 
 func Start() {

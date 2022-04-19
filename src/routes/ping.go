@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"template/src/middlewares"
+	"GO-API-template/src/middlewares"
 
 	"github.com/gofiber/fiber/v2"
 )

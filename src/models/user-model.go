@@ -2,7 +2,8 @@ package models
 
 import (
 	"fmt"
-	"template/src/services"
+
+	"GO-API-template/src/services"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

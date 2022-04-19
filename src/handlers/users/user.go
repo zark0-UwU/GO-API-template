@@ -3,8 +3,9 @@ package users
 import (
 	"log"
 	"strconv"
-	"template/src/models"
-	"template/src/services"
+
+	"GO-API-template/src/models"
+	"GO-API-template/src/services"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
