@@ -1,0 +1,240 @@
+basePath: /v1
+definitions:
+  models.User:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  users.PasswordInput:
+    properties:
+      password:
+        type: string
+    type: object
+host: localhost:5000 devel
+info:
+  contact:
+    name: API Support
+  description: Description for what is this security definition being used
+  license:
+    name: GNU GPLv3
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+  termsOfService: http://swagger.io/terms/
+  title: GO API template
+  version: "1.0"
+paths:
+  /auth/login:
+    get:
+      consumes:
+      - application/json
+      description: Get your user's token to acess users only protected routes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+      summary: login to get the authentication bearer token
+  /docs:
+    get:
+      consumes:
+      - application/json
+      description: get the API docs, in json, yaml, or view them using redoc in /docs/spec.html
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: API docs
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: Check api is active
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ping the server
+  /users/:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: initial data for the user
+        in: body
+        name: registerData
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      summary: Register endpoint
+  /users/{uid}:
+    delete:
+      consumes:
+      - application/json
+      description: delete user completely
+      parameters:
+      - description: password of the user to delete, not required if user is admin
+        in: body
+        name: password
+        schema:
+          $ref: '#/definitions/users.PasswordInput'
+      - description: User ID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: delete user
+    get:
+      consumes:
+      - application/json
+      description: Check api is active
+      parameters:
+      - description: uid string
+        in: query
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Retrieve user data
+    patch:
+      consumes:
+      - application/json
+      description: Update user info
+      parameters:
+      - description: data to update, currently only allows to update the fullName
+          field
+        in: body
+        name: updateUserData
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      - description: User ID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: update user
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

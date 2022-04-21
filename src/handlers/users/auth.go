@@ -33,6 +33,12 @@ func getUserByField(filter bson.M) (*models.User, error) {
 	return &user, nil
 }
 
+func getUserById(id string) (*models.User, error) {
+	return getUserByField(bson.M{
+		"_id": id,
+	})
+}
+
 func getUserByEmail(e string) (*models.User, error) {
 	return getUserByField(bson.M{
 		"email": e,
@@ -46,6 +52,14 @@ func getUserByUsername(u string) (*models.User, error) {
 }
 
 // Login get user and password
+// @Summary      login to get the authentication bearer token
+// @Description  Get your user's token to acess users only protected routes
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  interface{}
+// @Failure      401  {object}  interface{}
+// @Failure      400  {object}  interface{}
+// @Router       /auth/login [get]
 func Login(c *fiber.Ctx) error {
 	type LoginInput struct {
 		Identity string `json:"identity"`
@@ -99,7 +113,7 @@ func Login(c *fiber.Ctx) error {
 	// create the claims
 	claims := jwt.MapClaims{
 		"username": userData.Username,
-		"id":       userData.ID.Hex(),
+		"uid":      userData.ID.Hex(),
 		"role":     userData.Role,
 		"exp":      time.Now().Add(time.Hour * 72).Unix(),
 	}
