@@ -1,0 +1,34 @@
+_id: req_2f08548d87d549bab0248e15c63155b9
+type: Request
+parentId: wrk_c28fba86c9d4408aa14e4e594852eaae
+modified: 1650574026304
+created: 1650574026304
+url: "{{ base_url }}/users/"
+name: Register endpoint
+description: Register a new user
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+      "email": "string",
+      "fullName": "string",
+      "id": "string",
+      "password": "string",
+      "role": "string",
+      "username": "string"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    disabled: false
+    value: application/json
+authentication: {}
+metaSortKey: -1650574026304
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,35 @@
+_id: req_24242de1b14942e29c3bba5b75372d97
+type: Request
+parentId: wrk_c28fba86c9d4408aa14e4e594852eaae
+modified: 1650574026303
+created: 1650574026303
+url: "{{ base_url }}/users/:uid"
+name: delete user
+description: delete user completely
+method: DELETE
+body:
+  mimeType: application/json
+  text: |-
+    {
+      "password": "string"
+    }
+parameters:
+  - name: uid
+    disabled: false
+    value: string
+headers:
+  - name: Content-Type
+    disabled: false
+    value: application/json
+  - name: Authorization
+    disabled: false
+    value: "{{ api_key }}"
+authentication: {}
+metaSortKey: -1650574026303
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

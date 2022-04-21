@@ -1,0 +1,27 @@
+_id: req_6a71a1d1f7cb46a4983fdf231d2015ef
+type: Request
+parentId: wrk_c28fba86c9d4408aa14e4e594852eaae
+modified: 1650574026303
+created: 1650574026303
+url: "{{ base_url }}/users/:uid"
+name: Retrieve user data
+description: Check api is active
+method: GET
+body: {}
+parameters:
+  - name: uid
+    disabled: false
+    value: string
+headers:
+  - name: Authorization
+    disabled: false
+    value: "{{ api_key }}"
+authentication: {}
+metaSortKey: -1650574026303
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

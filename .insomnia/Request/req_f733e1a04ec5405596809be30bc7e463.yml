@@ -1,0 +1,25 @@
+_id: req_f733e1a04ec5405596809be30bc7e463
+type: Request
+parentId: wrk_c28fba86c9d4408aa14e4e594852eaae
+modified: 1650574038942
+created: 1650574026304
+url: "{{ base_url }}/ping"
+name: Ping the server
+description: Check api is active
+method: GET
+body: {}
+parameters: []
+headers:
+  - name: Authorization
+    disabled: false
+    value: "{{ api_key }}"
+    id: pair_8dad32fea30c469bb550e15f9501ca3e
+authentication: {}
+metaSortKey: -1650574026304
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
