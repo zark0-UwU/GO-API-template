@@ -1,27 +1,24 @@
 package routes
 
 import (
-	"GO-API-template/src/middlewares"
-
 	"github.com/gofiber/fiber/v2"
 )
 
 // Ping is a route to check if server is woken
-// @Summary      Ping the server
-// @Description  Check api is active
+// @Summary      API docs
+// @Description  get the API docs, in json, yaml, or view them using redoc in /docs/spec.html
 // @security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Success      200  string    string
 // @Failure      401  {object}  interface{}
-// @Router       /ping [get]
-func PingRoute(r *fiber.Router) {
+// @Router       /docs [get]
+func DocsRoute(r *fiber.Router) {
 	// Start the route
-	route := (*r).Group("/ping")
+	route := (*r).Group("/docs")
 	// General Middlewares for the route if any
 
 	// Define the subroutes
-	route.Get("/", middlewares.Auth(), func(c *fiber.Ctx) error {
-		return c.Status(fiber.StatusOK).SendString("Ping!")
-	})
+	route.Static("/", "./docs/") // mount the docs
+
 }

@@ -14,11 +14,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type PasswordInput struct {
+	Password string `json:"password"`
+}
+
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
 
+// returns true if the token token has the same id as the one passed
+//! this does not check the token to be valid, only validates an id against the token
 func validToken(t *jwt.Token, id string) bool {
 	n, err := strconv.Atoi(id)
 	if err != nil {
@@ -28,13 +34,10 @@ func validToken(t *jwt.Token, id string) bool {
 	claims := t.Claims.(jwt.MapClaims)
 	uid := int(claims["user_id"].(float64))
 
-	if uid != n {
-		return false
-	}
-
-	return true
+	return uid == n
 }
 
+// checks if the user with the given id exists and the password validates to the given user's
 func validUser(id string, p string) bool {
 	var user models.User
 
@@ -55,15 +58,20 @@ func validUser(id string, p string) bool {
 }
 
 // GetUser get a user
+// @Summary      Retrieve user data
+// @Description  Check api is active
+// @security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        uid  query  string  true  "uid string"
+// @Router       /users/{uid} [get]
+// @Success      200  {object}  interface{}
+// @Failure      401  {object}  interface{}
+// @Failure      404  {object}  interface{}
+// @Failure      500  {object}  interface{}
 func GetUser(c *fiber.Ctx) error {
-	id := c.Params("id")
-
-	var user models.User
-	filter := bson.D{
-		{"_id", id},
-	}
-	res := models.UsersCollection.FindOne(services.Mongo.Context, filter)
-	err := res.Decode(&user)
+	id := c.Params("uid")
+	user, err := getUserById(id)
 	if err != nil {
 		log.Println(err.Error())
 		return c.Status(500).JSON(fiber.Map{
@@ -78,7 +86,17 @@ func GetUser(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "success", "message": "Product found", "data": user})
 }
 
-// CreateUser new user
+// CreateUser register new user
+// @Summary      Register endpoint
+// @Description  Register a new user
+// @Accept       json
+// @Produce      json
+// @param	registerData body models.User{} true "initial data for the user"
+// @Success      200  {object}  interface{}
+// @Failure      401  {object}  interface{}
+// @Failure      422  {object}  interface{}
+// @Failure      500  {object}  interface{}
+// @Router       /users/ [post]
 func CreateUser(c *fiber.Ctx) error {
 	type NewUser struct {
 		Username string `json:"username"`
@@ -121,12 +139,21 @@ func CreateUser(c *fiber.Ctx) error {
 }
 
 // UpdateUser update user
+// @Summary      update user
+// @Description  Update user info
+// @Accept       json
+// @Produce      json
+// @security     BearerAuth
+// @param	updateUserData body models.User{} true "data to update, currently only allows to update the fullName field"
+// @param	uid path string true "User ID"
+// @Success      200  {object}  interface{}
+// @Failure      401  {object}  interface{}
+// @Failure      422  {object}  interface{}
+// @Failure      500  {object}  interface{}
+// @Router       /users/{uid} [patch]
 func UpdateUser(c *fiber.Ctx) error {
 	//TODO: add more fields to update (maybe via model.User)
-	type UpdateUserInput struct {
-		FullName string `json:"fullName"`
-	}
-	var uui UpdateUserInput
+	var uui models.User
 	if err := c.BodyParser(&uui); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"status":  "error",
@@ -134,9 +161,27 @@ func UpdateUser(c *fiber.Ctx) error {
 			"data":    err,
 		})
 	}
-	id := c.Params("id")
+	id := c.Params("uid")
 	token := c.Locals("user").(*jwt.Token)
 
+	if id != token.Claims.(jwt.MapClaims)["uid"] {
+		user, err := getUserById(id)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"status":  "error",
+				"message": "failed to delete the user",
+				"data":    nil,
+			})
+		}
+		if user.Role != "admin" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"status":  "error",
+				"message": "failed to delete the user, your role cant delete other users.",
+				"data":    nil,
+			})
+		}
+	}
+	//? dangerous function?
 	if !validToken(token, id) {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"status":  "error",
@@ -163,7 +208,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"status":  "error",
-			"message": "failed to update the user",
+			"message": "failed to delete the user",
 			"data":    nil,
 		})
 	}
@@ -176,17 +221,48 @@ func UpdateUser(c *fiber.Ctx) error {
 }
 
 // DeleteUser delete user
+// @Summary      delete user
+// @Description  delete user completely
+// @Accept       json
+// @Produce      json
+// @security     BearerAuth
+// @param	password body PasswordInput{} false "password of the user to delete, not required if user is admin"
+// @param	uid path string true "User ID"
+// @Success      200  {object}  interface{}
+// @Failure      401  {object}  interface{}
+// @Failure      422  {object}  interface{}
+// @Failure      500  {object}  interface{}
+// @Router       /users/{uid} [delete]
 func DeleteUser(c *fiber.Ctx) error {
-	type PasswordInput struct {
-		Password string `json:"password"`
-	}
 	var pi PasswordInput
 	if err := c.BodyParser(&pi); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
 	}
-	id := c.Params("id")
+	id := c.Params("uid")
 	token := c.Locals("user").(*jwt.Token)
+	var user *models.User
 
+	if id != token.Claims.(jwt.MapClaims)["uid"] {
+		var err error
+		user, err = getUserById(id)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"status":  "error",
+				"message": "failed to delete the user",
+				"data":    nil,
+			})
+		}
+
+		if user.Role != "admin" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"status":  "error",
+				"message": "failed to delete the user, your role cant delete other users.",
+				"data":    nil,
+			})
+		}
+	}
+
+	//? dangerous code?
 	if !validToken(token, id) {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"status": "error", "message": "Invalid token id", "data": nil})
 
@@ -209,12 +285,12 @@ func DeleteUser(c *fiber.Ctx) error {
 	}
 	deleted, err := models.UsersCollection.DeleteOne(services.Mongo.Context, filter)
 
-	var user models.User
-	res.Decode(&user)
+	var deletedUser models.User
+	res.Decode(&deletedUser)
 
 	return c.JSON(fiber.Map{
 		"status":  "success",
 		"message": string(deleted.DeletedCount) + " user successfully deleted",
-		"data":    user,
+		"data":    deletedUser,
 	})
 }
