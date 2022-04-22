@@ -29,116 +29,11 @@
 <body>
     <redoc spec-url='./swagger.yaml'></redoc>
     <script src="https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js"> </script>
+    <script src="./RedocTheme.js"></script>
     <script>
         Redoc.init(
             "./swagger.yaml",
-            /* { // config schema object
-                //* keep in mind theese are not all the options, not the defaults!
-                // To change theese settings refer to:
-                // https://redocly.com/docs/api-reference-docs/configuration/theming/
-                theme: {
-                    colors: {
-                        accent: {
-                            main: "#1A936F",
-                            light: "#39A788",
-                            dark: "#FF00a0",
-                            contrastText: "#FF6666"
-                        },
-                        border: {
-                            dark: "#FF6666",
-                            light: "#E4E7EB",
-                        },
-                        error: {
-                            contrastText: "#ffffff",
-                            dark: "",
-                            light: "",
-                            main: "#FF6161"
-                        },
-                        http: {
-                            basic: "#707070",
-                            delete: "#c83736",
-                            get: "#3a9601",
-                            head: "#a23dad",
-                            link: "#07818f",
-                            options: "#947014",
-                            patch: "#bf581d",
-                            post: "#0065fb",
-                            put: "#93527b",
-                        },
-                        primary: {
-                            contrastText: "#FF6666",
-                            dark: "#fefefe",
-                            light: "#fefefe",
-                            main: "#1A936F"
-                        },
-                        responses: {
-                            error: "",
-                            info: "",
-                            redirect: "",
-                            success: "",
-                        },
-                        secondary: {
-                            main: "#e4e7eb",
-                            light: "#f5f7fa",
-                            contrastText: "#990000",
-                        },
-                        success: {
-                            contrastText: "",
-                            dark: "",
-                            light: "",
-                            main: ""
-                        },
-                        text: {
-                            primary: "#fefefe",
-                            secondary: "#f0f0f0",
-                            light: "#f4f7fa",
-                        },
-                        tonalOffset: 0.2,
-                        warning: {
-                            contrastText: "",
-                            dark: "",
-                            light: "",
-                            main: ""
-                        }
-                    },
-                    schema: {
-                        caretColor: "",
-                        requireLabelColor: "#ff0000",
-                        typeNameColor: "",
-                        typeTitleColor: "",
-                        linesColor: "",
-                    },
-                    sidebar: {
-                        width: "300px",
-                        textColor: "#ffffff",
-                        backgroundColor: "#1f1f1f"
-                    },
-                    rightPanel: {
-                        backgroundColor: "#1f1f1f",
-                        textColor: "#ffffff"
-                    },
-                    typography: {
-                        code: {
-                            backgroundColor: "rgba(38, 50, 56, 0.05)",
-                            color: "#e53935",
-                        },
-                        heading1: {
-                            color: ""
-                        },
-                        heading2: {
-                            color: ""
-                        },
-                        heading3: {
-                            color: ""
-                        },
-                        links: {
-                            color: "",
-                            hover: "",
-                            visited: "",
-                        }
-                    }
-                }
-            } */
+            theme
         )
     </script>
 </body>

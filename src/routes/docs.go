@@ -18,7 +18,7 @@ func DocsRoute(r *fiber.Router) {
 	route := (*r).Group("/docs")
 	// General Middlewares for the route if any
 	route.Get("/", func(c *fiber.Ctx) error { // redirect to the web docs
-		return c.Redirect("spec.htm")
+		return c.Redirect("docs/spec.htm")
 	})
 	// Define the subroutes
 	route.Static("/", "./docs/") // mount the docs
