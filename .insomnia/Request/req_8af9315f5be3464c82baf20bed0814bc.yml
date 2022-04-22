@@ -1,0 +1,43 @@
+_id: req_8af9315f5be3464c82baf20bed0814bc
+type: Request
+parentId: wrk_c28fba86c9d4408aa14e4e594852eaae
+modified: 1650574035445
+created: 1650574026302
+url: "{{ base_url }}/users/:uid"
+name: update user
+description: Update user info
+method: PATCH
+body:
+  mimeType: application/json
+  text: |-
+    {
+      "email": "string",
+      "fullName": "string",
+      "id": "string",
+      "password": "string",
+      "role": "string",
+      "username": "string"
+    }
+parameters:
+  - name: uid
+    disabled: false
+    value: string
+    id: pair_7eb4ae22dd144e6591d75d7ef12fb44e
+headers:
+  - name: Content-Type
+    disabled: false
+    value: application/json
+    id: pair_6eca958653f248f79496d80571615914
+  - name: Authorization
+    disabled: false
+    value: "{{ api_key }}"
+    id: pair_0ec17f442edf406db59b6f7ac3d542c1
+authentication: {}
+metaSortKey: -1650574026302
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
