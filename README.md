@@ -60,6 +60,11 @@ The only thing it handles by default is a sesion management system.
 
 I wanted to contain all the source code under a sub folder, so I only use app.go to execute a Start() function in src/main.go
 
+# API documentation
+   currently swaggest/swag cli is being used to generate the docs from the decalrative comments, this is no longoer the case, since it does not support OAS3.
+   
+   To serve theese docs a Redoc static file is being used, nothe that internet connection is required as jdelivr is being used for dependencies.
+
 ## Setup:
 
 ### If building from source:
@@ -74,13 +79,16 @@ go mod download
 3. After the configuration and ensuring that the db is operational, run either
 
 ```
-go build # to get the executable to run
+go build
+```
+ to get the executable to run
 
 or
 
-go run main.go
+```
+go run app.go
 ```
 
-## Announcement:
+## About:
 
-If you find this repository useful to you in any way, do help me by starring this repository and let your friends know about this repo. I'll try my best to keep it updated.
+If this repository is/was useful to you in any way, please star this repository and share it with people who may be interested. I'll do my best to keep it updated.
