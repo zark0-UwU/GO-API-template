@@ -13,18 +13,14 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:5000 devel",
+    "host": "localhost:3000",
     "basePath": "/v1",
     "paths": {
         "/auth/login": {
             "get": {
                 "description": "Get your user's token to acess users only protected routes",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
                 "summary": "login to get the authentication bearer token",
                 "responses": {
                     "200": {
@@ -56,12 +52,8 @@
                     }
                 ],
                 "description": "get the API docs, in json, yaml, or view them using redoc in /docs/spec.html",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
                 "summary": "API docs",
                 "responses": {
                     "200": {
@@ -87,12 +79,8 @@
                     }
                 ],
                 "description": "Check api is active",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
                 "summary": "Ping the server",
                 "responses": {
                     "200": {
@@ -113,12 +101,8 @@
         "/users/": {
             "post": {
                 "description": "Register a new user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
                 "summary": "Register endpoint",
                 "parameters": [
                     {
@@ -167,12 +151,8 @@
                     }
                 ],
                 "description": "Check api is active",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
                 "summary": "Retrieve user data",
                 "parameters": [
                     {
@@ -217,12 +197,8 @@
                     }
                 ],
                 "description": "delete user completely",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
                 "summary": "delete user",
                 "parameters": [
                     {
@@ -275,12 +251,8 @@
                     }
                 ],
                 "description": "Update user info",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
                 "summary": "update user",
                 "parameters": [
                     {

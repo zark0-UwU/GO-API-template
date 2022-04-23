@@ -21,6 +21,6 @@ func DocsRoute(r *fiber.Router) {
 		return c.Redirect("docs/spec.htm")
 	})
 	// Define the subroutes
-	route.Static("/", "./docs/") // mount the docs
+	route.Static("/", "./docs/public") // mount the docs
 
 }

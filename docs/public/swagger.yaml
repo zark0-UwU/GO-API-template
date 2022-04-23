@@ -20,7 +20,7 @@ definitions:
       password:
         type: string
     type: object
-host: localhost:5000 devel
+host: localhost:3000
 info:
   contact:
     name: API Support
