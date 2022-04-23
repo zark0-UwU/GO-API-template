@@ -13,7 +13,8 @@ import (
 // This will load the routes onto a fiber app, configured here as well
 func LoadFiber() *fiber.App {
 	cfg := fiber.Config{
-		CaseSensitive: true,
+		CaseSensitive:     true,
+		EnablePrintRoutes: false,
 	}
 	app := fiber.New(cfg)
 
