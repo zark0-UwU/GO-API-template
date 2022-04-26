@@ -18,6 +18,7 @@ type PasswordInput struct {
 	Password string `json:"password"`
 }
 
+// returns hashed password
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
@@ -98,12 +99,7 @@ func GetUser(c *fiber.Ctx) error {
 // @Failure      500  {object}  interface{}
 // @Router       /users/ [post]
 func CreateUser(c *fiber.Ctx) error {
-	type NewUser struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-	}
-
-	user := new(models.User)
+	var user models.User
 	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"status":  "error",
@@ -125,17 +121,26 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 
 	user.Password = hash
+
+	// Lock to create onlyregular user by asignin the "user" role
+	user.Role = "user"
+	// Set the roleID dynamically so it can be para metrized in the future
+	err = user.SetRole()
+
+	// check that the username/email is not already being used
+	//? move to the user model as func (models.user)checkUnique() bool ?
+	uMail, err := getUserByEmail(user.Email)
+	uUsername, err := getUserByUsername(user.Username)
+	if uMail != nil || uUsername != nil {
+		return c.Status(fiber.StatusLocked).JSON(fiber.Map{"status": "error", "message": "Couldn't create user, user with the same username/email already exists", "data": err})
+	}
+
 	_, err = user.Create()
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't create user", "data": err})
 	}
 
-	newUser := NewUser{
-		Email:    user.Email,
-		Username: user.Username,
-	}
-
-	return c.JSON(fiber.Map{"status": "success", "message": "Created user", "data": newUser})
+	return c.JSON(fiber.Map{"status": "success", "message": "Created user", "data": user.Private()})
 }
 
 // UpdateUser update user
@@ -201,7 +206,7 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	filter := bson.M{"_id": userOID}
 	update := bson.D{
-		{"$set", bson.D{{"fullName", uui.FullName}}},
+		{"$set", bson.D{{"fullName", uui.Name}}},
 	}
 
 	_, err = models.UsersCollection.UpdateOne(services.Mongo.Context, filter, update)

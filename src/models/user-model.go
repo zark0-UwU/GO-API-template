@@ -15,8 +15,13 @@ type User struct {
 	Username string             `bson:"username,omitempty" json:"username"`
 	Email    string             `bson:"email,omitempty" json:"email"`
 	Password string             `bson:"password,omitempty" json:"password"`
-	FullName string             `bson:"fullName,omitempty" json:"fullName"`
+	Name     string             `bson:"name,omitempty" json:"name"`
 	Role     string             `bson:"role,omitempty" json:"role"`
+	RoleID   primitive.ObjectID `bson:"roleID,omitempty" json:"roleID"`
+	// Tokens list is only used to be able to block the token later by placing said token onto the BlockedTokens list
+	Tokens []string `bson:"tokens,omitempty" json:"tokens"`
+	// Any attempt to use the tokens stored here, will be blocked
+	BlockedTokens []string `bson:"blockedTokens,omitempty" json:"blockedTokens"`
 }
 
 //? The plurificated interfaces of the models are probably useless AAAND anoying
@@ -26,10 +31,49 @@ type Users interface {
 	CreateSingletonDBAndCollection()
 }
 
+// userdata viewable by anyone
+type userPublic struct {
+	Username string `bson:"username,omitempty" json:"username"`
+	Role     string `bson:"role,omitempty" json:"role"`
+}
+
+// User data only shown to the user
+type userPrivate struct {
+	Username string `bson:"username,omitempty" json:"username"`
+	Email    string `bson:"email,omitempty" json:"email"`
+	Name     string `bson:"name,omitempty" json:"name"`
+	Role     string `bson:"role,omitempty" json:"role"`
+	//RoleID   primitive.ObjectID `bson:"roleID,omitempty" json:"roleID"`
+	// Tokens list is only used to be able to block the token later by placing said token onto the BlockedTokens list
+	Tokens []string `bson:"tokens,omitempty" json:"tokens"`
+	// Any attempt to use the tokens stored here, will be blocked
+	BlockedTokens []string `bson:"blockedTokens,omitempty" json:"blockedTokens"`
+}
+
 var UsersCollection *mongo.Collection
 
 // this is the database where the collection is expected, could have multiple if necessary
 var userModelDB *mongo.Database
+
+// Returns the public/viewable user info
+func (u User) Public() userPublic {
+	return userPublic{
+		Username: u.Username,
+		Role:     u.Role,
+	}
+}
+
+// Returns the user viewable info
+func (u User) Private() userPrivate {
+	return userPrivate{
+		Username:      u.Username,
+		Email:         u.Email,
+		Name:          u.Name,
+		Role:          u.Role,
+		Tokens:        u.Tokens,
+		BlockedTokens: u.BlockedTokens,
+	}
+}
 
 func (u User) CreateSingletonDBAndCollection() {
 	if userModelDB == nil {
@@ -89,4 +133,37 @@ func (u User) ReadOne() []bson.M { //? maybe shouldn't make this function
 	currsor.All(services.Mongo.Context, &kao)
 
 	return kao
+}
+
+// Returns the specific data about the role for the user from the DB
+func (u User) RoleData() (Role, error) {
+	filter := bson.D{
+		{"_id", u.RoleID.Hex()},
+	}
+	res := RolesCollection.FindOne(services.Mongo.Context, filter)
+
+	var role Role
+	err := res.Decode(role)
+
+	if err != nil {
+		return role, err
+	}
+
+	return role, nil
+}
+
+// Sets the role id by searching it via the name stored on user.Role
+func (u *User) SetRole() error {
+	filter := bson.D{
+		{"role", u.Role},
+	}
+	res := RolesCollection.FindOne(services.Mongo.Context, filter)
+
+	var role Role
+	err := res.Decode(role)
+
+	if err == nil {
+		u.RoleID = role.ID
+	}
+	return err
 }

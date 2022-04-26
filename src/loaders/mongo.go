@@ -12,5 +12,6 @@ func LoadMongo() *context.CancelFunc {
 
 	// init all the collections
 	models.User{}.CreateSingletonDBAndCollection()
+	models.Role{}.CreateSingletonDBAndCollection()
 	return cancelCtx
 }

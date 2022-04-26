@@ -9,7 +9,7 @@ import (
 
 func UsersRoute(r *fiber.Router) {
 	// Start the route
-	route := (*r).Group("/users")
+	route := (*r).Group("/users") //? shuld i use /user instead? it makes it a lot more semantic
 	// General Middlewares for the route if any
 
 	// Define the subroutes

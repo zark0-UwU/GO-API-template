@@ -14,11 +14,12 @@ import (
 )
 
 // CheckPasswordHash compare password with hash
-func CheckPasswordHash(password, hash string) bool {
+func CheckPasswordHash(password, hash string) bool { //? Shuld be moved to helpers/utils
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
 
+//? All getUserBy methods sguld be moved to be a function of the model itself
 func getUserByField(filter bson.M) (*models.User, error) {
 	var user models.User
 	res := models.UsersCollection.FindOne(context.Background(), filter)
@@ -49,6 +50,11 @@ func getUserByUsername(u string) (*models.User, error) {
 	return getUserByField(bson.M{
 		"username": u,
 	})
+}
+
+// Standard error response for user related authorization error responses
+func stdAuthError(c *fiber.Ctx, status, message string, data interface{}) error {
+	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": status, "message": message, "data": data})
 }
 
 // Login get user and password
@@ -82,31 +88,35 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// get userdata from db
+
+	// try email
 	email, err := getUserByEmail(input.Identity)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Error on email", "data": err})
+		return stdAuthError(c, "error", "Error on email", err)
 	}
 
 	if email == nil {
+		// If email failed try username
 		user, err := getUserByUsername(input.Identity)
 		if err != nil {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Error on username", "data": err})
-
+			return stdAuthError(c, "error", "Error on username", err)
 		}
 
 		if user == nil {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "User not found", "data": err})
+			return stdAuthError(c, "error", "User not found", err)
 		}
 
+		// If user didnt fail save it to userData for later use
 		userData = *user
 	} else {
+		// If email didnt fail save it to userData for later use
 		userData = *email
 	}
 	// END get userdata from db
 
 	// validate provided credenntials for user
 	if !CheckPasswordHash(input.Password, userData.Password) {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Invalid password", "data": nil})
+		return stdAuthError(c, "error", "Invalid password", nil)
 	}
 	// END validate provided credenntials for user
 
@@ -115,6 +125,7 @@ func Login(c *fiber.Ctx) error {
 		"username": userData.Username,
 		"uid":      userData.ID.Hex(),
 		"role":     userData.Role,
+		"rid":      userData.RoleID.Hex(),
 		"exp":      time.Now().Add(time.Hour * 72).Unix(),
 	}
 
