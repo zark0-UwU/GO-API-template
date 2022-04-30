@@ -1,20 +1,14 @@
-package users
+package auth
 
 import (
-	"time"
-
 	"GO-API-template/src/config"
 	"GO-API-template/src/models"
 	"GO-API-template/src/utils"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 )
-
-// Standard error response for user related authorization error responses
-func stdAuthError(c *fiber.Ctx, status, message string, data interface{}) error {
-	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": status, "message": message, "data": data})
-}
 
 // Login get user and password
 // @Summary      login to get the authentication bearer token
