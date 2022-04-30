@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+const BasePath = "/v1"
+
 //TODO: Make a struct (on its own file) and and instance for basic important setting
 //TODO: Make a function to refresh each setting from the struct above
 // dinamically get the variables, so

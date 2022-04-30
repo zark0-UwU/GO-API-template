@@ -1,56 +1,15 @@
 package users
 
 import (
-	"context"
 	"time"
 
 	"GO-API-template/src/config"
 	"GO-API-template/src/models"
+	"GO-API-template/src/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
-	"go.mongodb.org/mongo-driver/bson"
-	"golang.org/x/crypto/bcrypt"
 )
-
-// CheckPasswordHash compare password with hash
-func CheckPasswordHash(password, hash string) bool { //? Shuld be moved to helpers/utils
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
-}
-
-//? All getUserBy methods sguld be moved to be a function of the model itself
-func getUserByField(filter bson.M) (*models.User, error) {
-	var user models.User
-	res := models.UsersCollection.FindOne(context.Background(), filter)
-	err := res.Err()
-	if err != nil {
-		return nil, nil
-	}
-	err = res.Decode(&user)
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
-}
-
-func getUserById(id string) (*models.User, error) {
-	return getUserByField(bson.M{
-		"_id": id,
-	})
-}
-
-func getUserByEmail(e string) (*models.User, error) {
-	return getUserByField(bson.M{
-		"email": e,
-	})
-}
-
-func getUserByUsername(u string) (*models.User, error) {
-	return getUserByField(bson.M{
-		"username": u,
-	})
-}
 
 // Standard error response for user related authorization error responses
 func stdAuthError(c *fiber.Ctx, status, message string, data interface{}) error {
@@ -87,35 +46,14 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	// get userdata from db
-
-	// try email
-	email, err := getUserByEmail(input.Identity)
+	err := userData.Fill(input.Identity, false, true, true)
 	if err != nil {
-		return stdAuthError(c, "error", "Error on email", err)
-	}
-
-	if email == nil {
-		// If email failed try username
-		user, err := getUserByUsername(input.Identity)
-		if err != nil {
-			return stdAuthError(c, "error", "Error on username", err)
-		}
-
-		if user == nil {
-			return stdAuthError(c, "error", "User not found", err)
-		}
-
-		// If user didnt fail save it to userData for later use
-		userData = *user
-	} else {
-		// If email didnt fail save it to userData for later use
-		userData = *email
+		return stdAuthError(c, "error", "User not found", err)
 	}
 	// END get userdata from db
 
 	// validate provided credenntials for user
-	if !CheckPasswordHash(input.Password, userData.Password) {
+	if !utils.CheckHash(input.Password, userData.Password) {
 		return stdAuthError(c, "error", "Invalid password", nil)
 	}
 	// END validate provided credenntials for user

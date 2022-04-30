@@ -1,61 +1,35 @@
 package users
 
 import (
-	"log"
+	"context"
+	"fmt"
 	"strconv"
 
+	"GO-API-template/src/config"
+	stdMsg "GO-API-template/src/helpers/stdMessages"
 	"GO-API-template/src/models"
 	"GO-API-template/src/services"
+	"GO-API-template/src/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"golang.org/x/crypto/bcrypt"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type PasswordInput struct {
 	Password string `json:"password"`
 }
 
-// returns hashed password
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
-
-// returns true if the token token has the same id as the one passed
-//! this does not check the token to be valid, only validates an id against the token
-func validToken(t *jwt.Token, id string) bool {
-	n, err := strconv.Atoi(id)
-	if err != nil {
-		return false
-	}
-
-	claims := t.Claims.(jwt.MapClaims)
-	uid := int(claims["user_id"].(float64))
-
-	return uid == n
-}
-
-// checks if the user with the given id exists and the password validates to the given user's
-func validUser(id string, p string) bool {
-	var user models.User
-
-	filter := bson.D{
-		{"_id", id},
-	}
-	res := models.UsersCollection.FindOne(services.Mongo.Context, filter)
-	err := res.Decode(&user)
-	if err != nil {
-		return false
-	}
-
-	if user.Username == "" {
-		return false
-	}
-
-	return CheckPasswordHash(p, user.Password)
+type rangeUser struct {
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Amount  int         `json:"amount"`
+	Offset  int         `json:"offset"`
+	Limmit  int         `json:"limmit"`
+	Next    string      `json:"next"`
+	Users   interface{} `json:"users"`
 }
 
 // GetUser get a user
@@ -71,20 +45,98 @@ func validUser(id string, p string) bool {
 // @Failure      404  {object}  interface{}
 // @Failure      500  {object}  interface{}
 func GetUser(c *fiber.Ctx) error {
-	id := c.Params("uid")
-	user, err := getUserById(id)
+	// Identity of the user to get data from
+	identity := c.Params("uid")
+	// get the data of the user we want to get data from
+	var user models.User
+	err := user.Fill(identity, true, true, false)
 	if err != nil {
-		log.Println(err.Error())
+		if err == mongo.ErrNoDocuments {
+			return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No user found with ID", "data": nil})
+		}
 		return c.Status(500).JSON(fiber.Map{
 			"status":  "error",
 			"message": "Found an error while trying to get the user",
 		})
 	}
 
-	if user.Username == "" {
-		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No user found with ID", "data": nil})
+	// Get Token of the reader's user
+	token := c.Locals("user").(*jwt.Token)
+	editorUID := fmt.Sprintf("%v", token.Claims.(jwt.MapClaims)["uid"])
+
+	// Get the reader's data
+	var editorUser models.User
+	editorUser.Fill(editorUID, true, false, false)
+	var editorRole models.Role
+	editorRole.Fill(editorUser.RoleID.Hex(), true, false)
+
+	// check what the user is authorised to get and return that
+	if user.ID.Hex() == editorUID {
+		// User owner
+		return c.JSON(fiber.Map{"status": "success", "message": "User found", "user": user.Private()})
 	}
-	return c.JSON(fiber.Map{"status": "success", "message": "Product found", "data": user})
+	// Parametrized permissons
+	if !editorRole.Permissons.UsersAdmin {
+		// Any regular user:
+		return c.JSON(fiber.Map{"status": "success", "message": "User found", "user": user.Public()})
+	}
+	// User admins
+	return c.JSON(fiber.Map{"status": "success", "message": "User found", "user": user})
+}
+
+// GetUsers get the users list
+// @Summary      Retrieve users list
+// @Description  Retrieve the users id's list
+// @security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Router       /users [get]
+// @Success      200  {object}  interface{}
+// @Failure      401  {object}  interface{}
+// @Failure      404  {object}  interface{}
+// @Failure      500  {object}  interface{}
+func GetUsers(c *fiber.Ctx) error {
+	offset, offsetErr := strconv.Atoi(c.Query("o", "0"))
+	limmit, limmitErr := strconv.Atoi(c.Query("l", "10"))
+	if (offset - limmit) > 100 {
+		limmit = offset + 100
+	}
+	if offsetErr != nil || limmitErr != nil {
+		offset = 0
+		limmit = 10
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  "error",
+			"message": "Found an error while parsing your input, review your 'o' and 'l' query params",
+		})
+	}
+
+	projection := bson.M{"_id": 1, "username": 1, "role": 1}
+	cursor, err := models.UsersCollection.Find(
+		context.Background(),
+		bson.D{},
+		options.Find().SetSkip(int64(offset)).SetLimit(int64(limmit)).SetProjection(projection))
+	if err != nil {
+
+	}
+
+	var users []models.UserMinimal
+	cursor.All(context.Background(), &users)
+
+	r := limmit - offset
+	next := ""
+	if r <= len(users) {
+		next = c.BaseURL() + config.BasePath + fmt.Sprintf("/users?o=%v&l=%v", offset+r, limmit+r)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(rangeUser{
+		Status:  "success",
+		Offset:  offset,
+		Limmit:  limmit,
+		Amount:  len(users),
+		Next:    next,
+		Message: "Sucessfuly found users",
+		Users:   users,
+	})
 }
 
 // CreateUser register new user
@@ -114,9 +166,23 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	hash, err := hashPassword(user.Password)
+	unique, err := user.CheckUnique()
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't hash password", "data": err})
+		return c.Status(500).JSON(stdMsg.ErrorDefault(
+			"An error ocured while checking if username and email are unique",
+			err,
+		))
+	}
+	if !unique {
+		return c.Status(fiber.StatusConflict).JSON(stdMsg.ErrorDefault(
+			"Specified username or email is already being used",
+			err,
+		))
+	}
+
+	hash, err := utils.Hash(user.Password)
+	if err != nil {
+		return c.Status(500).JSON(stdMsg.ErrorDefault("Couldn't hash password", err))
 
 	}
 
@@ -127,12 +193,14 @@ func CreateUser(c *fiber.Ctx) error {
 	// Set the roleID dynamically so it can be para metrized in the future
 	err = user.SetRole()
 
+	// lock tokens to be empty at user creation
+	user.Tokens = *new([]string)
+	user.BlockedTokens = *new([]string)
+
 	// check that the username/email is not already being used
-	//? move to the user model as func (models.user)checkUnique() bool ?
-	uMail, err := getUserByEmail(user.Email)
-	uUsername, err := getUserByUsername(user.Username)
-	if uMail != nil || uUsername != nil {
-		return c.Status(fiber.StatusLocked).JSON(fiber.Map{"status": "error", "message": "Couldn't create user, user with the same username/email already exists", "data": err})
+	isUnique, err := user.CheckUnique()
+	if isUnique {
+		return c.Status(fiber.StatusLocked).JSON(fiber.Map{"status": "error", "message": "Couldn't create user, user with the same username or email already exists", "data": err})
 	}
 
 	_, err = user.Create()
@@ -150,7 +218,7 @@ func CreateUser(c *fiber.Ctx) error {
 // @Produce      json
 // @security     BearerAuth
 // @param	updateUserData body models.User{} true "data to update, currently only allows to update the fullName field"
-// @param	uid path string true "User ID"
+// @param	uid path string true "User ID or username"
 // @Success      200  {object}  interface{}
 // @Failure      401  {object}  interface{}
 // @Failure      422  {object}  interface{}
@@ -158,6 +226,8 @@ func CreateUser(c *fiber.Ctx) error {
 // @Router       /users/{uid} [patch]
 func UpdateUser(c *fiber.Ctx) error {
 	//TODO: add more fields to update (maybe via model.User)
+
+	// user update input
 	var uui models.User
 	if err := c.BodyParser(&uui); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
@@ -166,48 +236,103 @@ func UpdateUser(c *fiber.Ctx) error {
 			"data":    err,
 		})
 	}
-	id := c.Params("uid")
-	token := c.Locals("user").(*jwt.Token)
 
-	if id != token.Claims.(jwt.MapClaims)["uid"] {
-		user, err := getUserById(id)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"status":  "error",
-				"message": "failed to delete the user",
-				"data":    nil,
-			})
-		}
-		if user.Role != "admin" {
+	// Identity of the user to modify
+	identity := c.Params("uid")
+	// get the data of the user we want to modify
+	var user models.User
+	user.Fill(identity, true, true, false)
+	// Token of the editor's user
+	token := c.Locals("user").(*jwt.Token)
+	editorUID := fmt.Sprintf("%v", token.Claims.(jwt.MapClaims)["uid"])
+
+	// Get the editor's data
+	var editorUser models.User
+	editorUser.Fill(editorUID, true, false, false)
+	var editorRole models.Role
+	editorRole.Fill(editorUser.RoleID.Hex(), true, false)
+
+	// check if editor is authorised to do the operation
+	if user.ID.Hex() != editorUID {
+		// Parametrized permissons
+		if !editorRole.Permissons.UsersAdmin {
+			/*
+				——————————No Perms?——————————————————
+				⠀⣞⢽⢪⢣⢣⢣⢫⡺⡵⣝⡮⣗⢷⢽⢽⢽⣮⡷⡽⣜⣜⢮⢺⣜⢷⢽⢝⡽⣝
+				⠸⡸⠜⠕⠕⠁⢁⢇⢏⢽⢺⣪⡳⡝⣎⣏⢯⢞⡿⣟⣷⣳⢯⡷⣽⢽⢯⣳⣫⠇
+				⠀⠀⢀⢀⢄⢬⢪⡪⡎⣆⡈⠚⠜⠕⠇⠗⠝⢕⢯⢫⣞⣯⣿⣻⡽⣏⢗⣗⠏⠀
+				⠀⠪⡪⡪⣪⢪⢺⢸⢢⢓⢆⢤⢀⠀⠀⠀⠀⠈⢊⢞⡾⣿⡯⣏⢮⠷⠁⠀⠀
+				⠀⠀⠀⠈⠊⠆⡃⠕⢕⢇⢇⢇⢇⢇⢏⢎⢎⢆⢄⠀⢑⣽⣿⢝⠲⠉⠀⠀⠀⠀
+				⠀⠀⠀⠀⠀⡿⠂⠠⠀⡇⢇⠕⢈⣀⠀⠁⠡⠣⡣⡫⣂⣿⠯⢪⠰⠂⠀⠀⠀⠀
+				⠀⠀⠀⠀⡦⡙⡂⢀⢤⢣⠣⡈⣾⡃⠠⠄⠀⡄⢱⣌⣶⢏⢊⠂⠀⠀⠀⠀⠀⠀
+				⠀⠀⠀⠀⢝⡲⣜⡮⡏⢎⢌⢂⠙⠢⠐⢀⢘⢵⣽⣿⡿⠁⠁⠀⠀⠀⠀⠀⠀⠀
+				⠀⠀⠀⠀⠨⣺⡺⡕⡕⡱⡑⡆⡕⡅⡕⡜⡼⢽⡻⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+				⠀⠀⠀⠀⣼⣳⣫⣾⣵⣗⡵⡱⡡⢣⢑⢕⢜⢕⡝⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+				⠀⠀⠀⣴⣿⣾⣿⣿⣿⡿⡽⡑⢌⠪⡢⡣⣣⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+				⠀⠀⠀⡟⡾⣿⢿⢿⢵⣽⣾⣼⣘⢸⢸⣞⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+				⠀⠀⠀⠀⠁⠇⠡⠩⡫⢿⣝⡻⡮⣒⢽⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+				——————————————————————————————————————
+			*/
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 				"status":  "error",
-				"message": "failed to delete the user, your role cant delete other users.",
+				"message": "failed to update the user, your role cant update other users.",
 				"data":    nil,
 			})
 		}
 	}
-	//? dangerous function?
-	if !validToken(token, id) {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Unprocessable Entity, Invalid token id",
-			"data":    nil,
-		})
+
+	// Authenticated & autorized
+
+	// ————————Validate fields to be updated———————————
+
+	// Special field role requires aditional autorization
+	if uui.Role != "" {
+		if editorRole.Permissons.RolesAdmin && editorRole.Permissons.UsersAdmin {
+			user.Role = uui.Role
+		} else {
+			return c.Status(fiber.StatusForbidden).JSON(
+				stdMsg.ErrorDefault("failed to update the user, your role cant modify users roles.", nil),
+			)
+		}
 	}
 
-	userOID, err := primitive.ObjectIDFromHex(id)
+	// user and email validation
+	if uui.Username != "" {
+		user.Username = uui.Username
+	}
+	if uui.Email != "" || uui.Email != user.Email {
+		user.Email = uui.Email
+	}
+	unique, err := user.CheckUnique()
 	if err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Unprocessable Entity, Invalid id",
-			"data":    nil,
-		})
+		return c.Status(500).JSON(stdMsg.ErrorDefault(
+			"An error ocured while checking if username and email are unique",
+			err,
+		))
+	}
+	if !unique {
+		return c.Status(fiber.StatusConflict).JSON(stdMsg.ErrorDefault(
+			"Specified username or email is already being used",
+			err,
+		))
 	}
 
-	filter := bson.M{"_id": userOID}
-	update := bson.D{
-		{"$set", bson.D{{"fullName", uui.Name}}},
+	// password validation
+	if uui.Password != "" {
+		hash, err := utils.Hash(uui.Password)
+		if err != nil {
+			return c.Status(500).JSON(stdMsg.ErrorDefault("Couldn't hash password", err))
+
+		}
+		user.Password = hash
 	}
+
+	if uui.Name != "" {
+		user.Name = uui.Name
+	}
+
+	filter := bson.M{"_id": user.ID}
+	update := bson.M{"$set": user}
 
 	_, err = models.UsersCollection.UpdateOne(services.Mongo.Context, filter, update)
 	if err != nil {
@@ -221,7 +346,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"status":  "success",
 		"message": "User successfully updated",
-		"data":    nil,
+		"data":    user.Private(),
 	})
 }
 
@@ -239,26 +364,30 @@ func UpdateUser(c *fiber.Ctx) error {
 // @Failure      500  {object}  interface{}
 // @Router       /users/{uid} [delete]
 func DeleteUser(c *fiber.Ctx) error {
-	var pi PasswordInput
-	if err := c.BodyParser(&pi); err != nil {
+	// password input
+	var pIn PasswordInput
+	if err := c.BodyParser(&pIn); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
 	}
-	id := c.Params("uid")
+
+	// Identity of the user to modify
+	identity := c.Params("uid")
+	// get the data of the user we want to modify
+	var user models.User
+	user.Fill(identity, true, true, false)
+	// Token of the editor's user
 	token := c.Locals("user").(*jwt.Token)
-	var user *models.User
+	editorUID := fmt.Sprintf("%v", token.Claims.(jwt.MapClaims)["uid"])
 
-	if id != token.Claims.(jwt.MapClaims)["uid"] {
-		var err error
-		user, err = getUserById(id)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"status":  "error",
-				"message": "failed to delete the user",
-				"data":    nil,
-			})
-		}
+	if user.ID.Hex() != editorUID {
+		// Get the editor's data
+		var editorUser models.User
+		editorUser.Fill(editorUID, true, false, false)
+		var editorRole models.Role
+		editorRole.Fill(editorUser.RoleID.Hex(), true, false)
 
-		if user.Role != "admin" {
+		// Parametrized permissons
+		if !editorRole.Permissons.UsersAdmin {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 				"status":  "error",
 				"message": "failed to delete the user, your role cant delete other users.",
@@ -267,35 +396,21 @@ func DeleteUser(c *fiber.Ctx) error {
 		}
 	}
 
-	//? dangerous code?
-	if !validToken(token, id) {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"status": "error", "message": "Invalid token id", "data": nil})
+	// Authenticated & autorized
 
-	}
-
-	if !validUser(id, pi.Password) {
+	if !utils.CheckHash(pIn.Password, user.Password) {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"status": "error", "message": "Not valid user", "data": nil})
-
 	}
 
-	userOID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"status": "error", "message": "Invalid id", "data": nil})
-	}
-
-	filter := bson.M{"_id": userOID}
-	res := models.UsersCollection.FindOne(services.Mongo.Context, filter)
-	if res.Err() != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"status": "error", "message": "Invalid id", "data": nil})
-	}
+	filter := bson.M{"_id": user.ID.Hex()}
 	deleted, err := models.UsersCollection.DeleteOne(services.Mongo.Context, filter)
-
-	var deletedUser models.User
-	res.Decode(&deletedUser)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Something went wron while deleting the user", "data": nil})
+	}
 
 	return c.JSON(fiber.Map{
 		"status":  "success",
 		"message": string(deleted.DeletedCount) + " user successfully deleted",
-		"data":    deletedUser,
+		"data":    user,
 	})
 }

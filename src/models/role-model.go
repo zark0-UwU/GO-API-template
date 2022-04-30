@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 
 	"GO-API-template/src/services"
@@ -80,23 +81,24 @@ func (r Role) ReadAll() []User {
 	return users
 }
 
-//TODO: Get next document in collection every time the function is called
-func (r Role) ReadOne() []bson.M { //? maybe shouldn't make this function
-	r.CreateSingletonDBAndCollection()
-
-	filter := bson.D{
-		//{"name", "uwu"}, // this works, Try it!
+func (r *Role) Fill(identity string, id, role bool) error {
+	var fields []bson.D
+	if id {
+		id, err := primitive.ObjectIDFromHex(identity)
+		if err == nil {
+			fields = append(fields, bson.D{{"_id", id}})
+		}
+	}
+	if role {
+		fields = append(fields, bson.D{{"role", identity}})
 	}
 
-	currsor, err := RolesCollection.Find(services.Mongo.Context, filter)
-	if err != nil {
-		panic(err)
+	filter := bson.D{{"$or", fields}}
+
+	res := RolesCollection.FindOne(context.Background(), filter)
+	if err := res.Err(); err != nil {
+		return err
 	}
-
-	var kao []bson.M
-
-	// TODO: check wether cursor is exhausted or fromStart == true , if is create new cursor and iterate that
-	currsor.All(services.Mongo.Context, &kao)
-
-	return kao
+	res.Decode(r)
+	return nil
 }
