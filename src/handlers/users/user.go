@@ -287,6 +287,33 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	// Special field role requires aditional autorization
 	if uui.Role != "" {
+		/*
+		 The editor can only modify users of a higher level (so, less permissons) than itself
+		 and can only set the user to a role with a higher level than the editor
+		*/
+
+		// get the original role
+		err := user.SetRole()
+		if err == mongo.ErrNoDocuments {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				stdMsg.ErrorDefault("The specified role does not exist", nil),
+			)
+		}
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				stdMsg.ErrorDefault("Unknown error while retieving the specified role", nil),
+			)
+		}
+		var role models.Role
+		role.Fill(user.RoleID.Hex(), true, false)
+
+		// check if editor can edit this user's role by role level
+		if role.Level <= editorRole.Level {
+			return c.Status(fiber.StatusForbidden).JSON(
+				stdMsg.ErrorDefault("You cant set the the role of this user", nil),
+			)
+		}
+		// check if editor can edit this user's role by role permissons
 		if editorRole.Permissons.RolesAdmin && editorRole.Permissons.UsersAdmin {
 			user.Role = uui.Role
 		} else {
@@ -294,6 +321,27 @@ func UpdateUser(c *fiber.Ctx) error {
 				stdMsg.ErrorDefault("failed to update the user, your role cant modify users roles.", nil),
 			)
 		}
+
+		// check if the specified role exists and set it
+		err = user.SetRole()
+		if err == mongo.ErrNoDocuments {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				stdMsg.ErrorDefault("The specified role does not exist", nil),
+			)
+		}
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(
+				stdMsg.ErrorDefault("Unknown error while retieving the specified role", nil),
+			)
+		}
+		role.Fill(user.RoleID.Hex(), true, false)
+		// check if editor can set the specified role
+		if role.Level <= editorRole.Level {
+			return c.Status(fiber.StatusForbidden).JSON(
+				stdMsg.ErrorDefault("You cant set the the role of this user", nil),
+			)
+		}
+
 	}
 
 	// user and email validation

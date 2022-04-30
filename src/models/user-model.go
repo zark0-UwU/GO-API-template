@@ -201,7 +201,9 @@ func (u *User) SetRole() error {
 		{"role", u.Role},
 	}
 	res := RolesCollection.FindOne(services.Mongo.Context, filter)
-
+	if err := res.Err(); err != nil {
+		return err
+	}
 	var role Role
 	err := res.Decode(role)
 
