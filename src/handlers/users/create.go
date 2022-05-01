@@ -63,8 +63,8 @@ func CreateUser(c *fiber.Ctx) error {
 	err = user.SetRole()
 
 	// lock tokens to be empty at user creation
-	user.Tokens = *new([]string)
-	user.BlockedTokens = *new([]string)
+	user.Tokens = *new(map[string]bool)
+	user.BlockedTokens = *new(map[string]bool)
 
 	// check that the username/email is not already being used
 	isUnique, err := user.CheckUnique()

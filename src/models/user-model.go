@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type User struct {
@@ -20,9 +21,9 @@ type User struct {
 	Role     string             `bson:"role,omitempty" json:"role"`
 	RoleID   primitive.ObjectID `bson:"roleID,omitempty" json:"roleID"`
 	// Tokens list is only used to be able to block the token later by placing said token onto the BlockedTokens list
-	Tokens []string `bson:"tokens,omitempty" json:"tokens"`
+	Tokens map[string]bool `bson:"tokens,omitempty" json:"tokens"`
 	// Any attempt to use the tokens stored here, will be blocked
-	BlockedTokens []string `bson:"blockedTokens,omitempty" json:"blockedTokens"`
+	BlockedTokens map[string]bool `bson:"blockedTokens,omitempty" json:"blockedTokens"`
 }
 
 //? The plurificated interfaces of the models are probably useless AAAND anoying
@@ -55,9 +56,9 @@ type userPrivate struct {
 	Role     string             `bson:"role,omitempty" json:"role"`
 	//RoleID   primitive.ObjectID `bson:"roleID,omitempty" json:"roleID"`
 	// Tokens list is only used to be able to block the token later by placing said token onto the BlockedTokens list
-	Tokens []string `bson:"tokens,omitempty" json:"tokens"`
+	Tokens map[string]bool `bson:"tokens,omitempty" json:"tokens"`
 	// Any attempt to use the tokens stored here, will be blocked
-	BlockedTokens []string `bson:"blockedTokens,omitempty" json:"blockedTokens"`
+	BlockedTokens map[string]bool `bson:"blockedTokens,omitempty" json:"blockedTokens"`
 }
 
 var UsersCollection *mongo.Collection
@@ -211,4 +212,24 @@ func (u *User) SetRole() error {
 		u.RoleID = role.ID
 	}
 	return err
+}
+
+//* Requires to have a well formed ID
+func (u *User) LoadTokens() {
+	UsersCollection.FindOne(
+		context.Background(),
+		bson.M{
+			"_id": u.ID,
+		},
+		options.MergeFindOneOptions().SetProjection(bson.M{"tokens": 1, "blockedTokens": 1}))
+}
+
+//* Requires to have a well formed ID
+func (u *User) PruneToken() {
+
+}
+
+//* Requires to have a well formed ID
+func (u *User) BlockToken() {
+
 }
