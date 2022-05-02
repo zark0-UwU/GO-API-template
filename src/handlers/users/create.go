@@ -21,7 +21,7 @@ import (
 // @Router       /users/ [post]
 func CreateUser(c *fiber.Ctx) error {
 	var user models.User
-	if err := c.BodyParser(user); err != nil {
+	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"status":  "error",
 			"message": "Unpocessable Entity, Review your input",
@@ -35,6 +35,7 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
+	// check that the username/email is not already being used
 	unique, err := user.CheckUnique()
 	if err != nil {
 		return c.Status(500).JSON(stdMsg.ErrorDefault(
@@ -65,12 +66,6 @@ func CreateUser(c *fiber.Ctx) error {
 	// lock tokens to be empty at user creation
 	user.Tokens = *new(map[string]bool)
 	user.BlockedTokens = *new(map[string]bool)
-
-	// check that the username/email is not already being used
-	isUnique, err := user.CheckUnique()
-	if isUnique {
-		return c.Status(fiber.StatusLocked).JSON(fiber.Map{"status": "error", "message": "Couldn't create user, user with the same username or email already exists", "data": err})
-	}
 
 	_, err = user.Create()
 	if err != nil {

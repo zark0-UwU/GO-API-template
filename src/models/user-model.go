@@ -106,13 +106,14 @@ func (u User) CreateSingletonDBAndCollection() {
 	}
 }
 
-func (u User) Create() (*mongo.InsertOneResult, error) {
+func (u *User) Create() (*mongo.InsertOneResult, error) {
 	u.CreateSingletonDBAndCollection()
 
 	insertedRes, err := UsersCollection.InsertOne(services.Mongo.Context, u)
 	if err != nil {
 		fmt.Println(err)
 	}
+	u.ID = insertedRes.InsertedID.(primitive.ObjectID)
 
 	return insertedRes, err
 }
