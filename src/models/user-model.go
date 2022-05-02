@@ -215,13 +215,20 @@ func (u *User) SetRole() error {
 }
 
 //* Requires to have a well formed ID
-func (u *User) LoadTokens() {
-	UsersCollection.FindOne(
+func (u *User) LoadTokens() error {
+
+	res := UsersCollection.FindOne(
 		context.Background(),
 		bson.M{
 			"_id": u.ID,
 		},
-		options.MergeFindOneOptions().SetProjection(bson.M{"tokens": 1, "blockedTokens": 1}))
+		options.MergeFindOneOptions().SetProjection(bson.M{"tokens": 1, "blockedTokens": 1}),
+	)
+	if res.Err() != nil {
+		return res.Err()
+	}
+	err := res.Decode(*u)
+	return err // returns nil or the last error
 }
 
 //* Requires to have a well formed ID
