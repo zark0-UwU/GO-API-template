@@ -1,8 +1,8 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2022-04-22T08:01:59.483Z",
-  "__export_source": "insomnia.desktop.app:v2022.1.0",
+  "__export_date": "2022-05-03T19:47:31.014Z",
+  "__export_source": "insomnia.desktop.app:v2022.2.1",
   "resources": [
     {
       "_id": "req_8af9315f5be3464c82baf20bed0814bc",
@@ -40,7 +40,7 @@
         }
       ],
       "authentication": {},
-      "metaSortKey": -1650574026302,
+      "metaSortKey": 2300,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -59,116 +59,6 @@
       "description": "",
       "scope": "design",
       "_type": "workspace"
-    },
-    {
-      "_id": "req_24242de1b14942e29c3bba5b75372d97",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650574026303,
-      "created": 1650574026303,
-      "url": "{{ base_url }}/users/:uid",
-      "name": "delete user",
-      "description": "delete user completely",
-      "method": "DELETE",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"password\": \"string\"\n}"
-      },
-      "parameters": [
-        {
-          "name": "uid",
-          "disabled": false,
-          "value": "string"
-        }
-      ],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "disabled": false,
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650574026303,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_6a71a1d1f7cb46a4983fdf231d2015ef",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650574026303,
-      "created": 1650574026303,
-      "url": "{{ base_url }}/users/:uid",
-      "name": "Retrieve user data",
-      "description": "Check api is active",
-      "method": "GET",
-      "body": {},
-      "parameters": [
-        {
-          "name": "uid",
-          "disabled": false,
-          "value": "string"
-        }
-      ],
-      "headers": [
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650574026303,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_2f08548d87d549bab0248e15c63155b9",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650574026304,
-      "created": 1650574026304,
-      "url": "{{ base_url }}/users/",
-      "name": "Register endpoint",
-      "description": "Register a new user",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"email\": \"string\",\n  \"fullName\": \"string\",\n  \"id\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"string\",\n  \"username\": \"string\"\n}"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "disabled": false,
-          "value": "application/json"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650574026304,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
     },
     {
       "_id": "req_f733e1a04ec5405596809be30bc7e463",
@@ -190,37 +80,7 @@
         }
       ],
       "authentication": {},
-      "metaSortKey": -1650574026304,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_2ee9c7492dbe4e74b96f0265b373a30c",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650574026305,
-      "created": 1650574026305,
-      "url": "{{ base_url }}/docs",
-      "name": "API docs",
-      "description": "get the API docs, in json, yaml, or view them using redoc in /docs/spec.html",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}",
-          "id": "pair_3a1bcfeba6bd4bedbfc964746749e837"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650574026305,
+      "metaSortKey": 1100,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -258,128 +118,7 @@
         }
       ],
       "authentication": {},
-      "metaSortKey": -1650574026305,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_c2040d7b663b42e291972954f5587577",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650579674721,
-      "created": 1650579674721,
-      "url": "{{ base_url }}/users/:uid",
-      "name": "update user",
-      "description": "Update user info",
-      "method": "PATCH",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"email\": \"string\",\n  \"fullName\": \"string\",\n  \"id\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"string\",\n  \"username\": \"string\"\n}"
-      },
-      "parameters": [
-        {
-          "name": "uid",
-          "disabled": false,
-          "value": "string"
-        }
-      ],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "disabled": false,
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650579674721,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_12583409196d4617ab126fdc9ce65dda",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650579674722,
-      "created": 1650579674722,
-      "url": "{{ base_url }}/users/:uid",
-      "name": "delete user",
-      "description": "delete user completely",
-      "method": "DELETE",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"password\": \"string\"\n}"
-      },
-      "parameters": [
-        {
-          "name": "uid",
-          "disabled": false,
-          "value": "string"
-        }
-      ],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "disabled": false,
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650579674722,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_bed9135e1f994df995d0f196693cdd8d",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650579674722,
-      "created": 1650579674722,
-      "url": "{{ base_url }}/users/:uid",
-      "name": "Retrieve user data",
-      "description": "Check api is active",
-      "method": "GET",
-      "body": {},
-      "parameters": [
-        {
-          "name": "uid",
-          "disabled": false,
-          "value": "string"
-        }
-      ],
-      "headers": [
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650579674722,
+      "metaSortKey": 800,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -400,185 +139,19 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"email\": \"string\",\n  \"fullName\": \"string\",\n  \"id\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"string\",\n  \"username\": \"string\"\n}"
+        "text": "{\n  \"email\": \"admin@zark0.com\",\n  \"fullName\": \"zark0 besto admin\",\n  \"password\": \"SuperSecurePassword\",\n  \"username\": \"admin\"\n}"
       },
       "parameters": [],
       "headers": [
         {
           "name": "Content-Type",
           "disabled": false,
-          "value": "application/json"
+          "value": "application/json",
+          "id": "pair_e29aab96a2424cbaac0430bf00ac9128"
         }
       ],
       "authentication": {},
-      "metaSortKey": -1650579674723,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_4f01219960864a4aada5fd79806cf300",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650579674724,
-      "created": 1650579674724,
-      "url": "{{ base_url }}/docs",
-      "name": "API docs",
-      "description": "get the API docs, in json, yaml, or view them using redoc in /docs/spec.html",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650579674724,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_92d03ee2069247aa9c4d612de62553c7",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650579674724,
-      "created": 1650579674724,
-      "url": "{{ base_url }}/ping",
-      "name": "Ping the server",
-      "description": "Check api is active",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650579674724,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_d860753dd77a4df5911d8c5444eadb6d",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650579674725,
-      "created": 1650579674725,
-      "url": "{{ base_url }}/auth/login",
-      "name": "login to get the authentication bearer token",
-      "description": "Get your user's token to acess users only protected routes",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [],
-      "authentication": {},
-      "metaSortKey": -1650579674725,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_926c2645422c467aab0000b2828455d4",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650580217344,
-      "created": 1650580217344,
-      "url": "{{ base_url }}/users/:uid",
-      "name": "update user",
-      "description": "Update user info",
-      "method": "PATCH",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"email\": \"string\",\n  \"fullName\": \"string\",\n  \"id\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"string\",\n  \"username\": \"string\"\n}"
-      },
-      "parameters": [
-        {
-          "name": "uid",
-          "disabled": false,
-          "value": "string"
-        }
-      ],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "disabled": false,
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650580217345,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_85dde925ea354440ba09abc8e2d31171",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650580217345,
-      "created": 1650580217345,
-      "url": "{{ base_url }}/users/:uid",
-      "name": "delete user",
-      "description": "delete user completely",
-      "method": "DELETE",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"password\": \"string\"\n}"
-      },
-      "parameters": [
-        {
-          "name": "uid",
-          "disabled": false,
-          "value": "string"
-        }
-      ],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "disabled": false,
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650580217345,
+      "metaSortKey": 1600,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -602,108 +175,20 @@
         {
           "name": "uid",
           "disabled": false,
-          "value": "string"
+          "value": "string",
+          "id": "pair_776d848ff34e44d38baa78ea22767975"
         }
       ],
       "headers": [
         {
           "name": "Authorization",
           "disabled": false,
-          "value": "{{ api_key }}"
+          "value": "{{ api_key }}",
+          "id": "pair_f9231c83152d419485095f1a502c6d4b"
         }
       ],
       "authentication": {},
-      "metaSortKey": -1650580217346,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_a4a9455458394910b05857abe069ccc7",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650580217347,
-      "created": 1650580217347,
-      "url": "{{ base_url }}/users/",
-      "name": "Register endpoint",
-      "description": "Register a new user",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"email\": \"string\",\n  \"fullName\": \"string\",\n  \"id\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"string\",\n  \"username\": \"string\"\n}"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "disabled": false,
-          "value": "application/json"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650580217347,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_bafbec6c944e4a538f3e75a904d49394",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650580217348,
-      "created": 1650580217348,
-      "url": "{{ base_url }}/ping",
-      "name": "Ping the server",
-      "description": "Check api is active",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650580217348,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_21f6b57f0aaa41f893dba8d72fc76164",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650580217349,
-      "created": 1650580217349,
-      "url": "{{ base_url }}/docs",
-      "name": "API docs",
-      "description": "get the API docs, in json, yaml, or view them using redoc in /docs/spec.html",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650580217349,
+      "metaSortKey": 2100,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -746,146 +231,7 @@
         }
       ],
       "authentication": {},
-      "metaSortKey": -1650581018095,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_e9a22e0fcdd4410988867b0d7712acde",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650581018095,
-      "created": 1650581018095,
-      "url": "{{ base_url }}/users/:uid",
-      "name": "update user",
-      "description": "Update user info",
-      "method": "PATCH",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"email\": \"string\",\n  \"fullName\": \"string\",\n  \"id\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"string\",\n  \"username\": \"string\"\n}"
-      },
-      "parameters": [
-        {
-          "name": "uid",
-          "disabled": false,
-          "value": "string"
-        }
-      ],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "disabled": false,
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650581018095,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_c6439341728545c7a9bd7798e9a93bbb",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650581018096,
-      "created": 1650581018096,
-      "url": "{{ base_url }}/users/",
-      "name": "Register endpoint",
-      "description": "Register a new user",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"email\": \"string\",\n  \"fullName\": \"string\",\n  \"id\": \"string\",\n  \"password\": \"string\",\n  \"role\": \"string\",\n  \"username\": \"string\"\n}"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "disabled": false,
-          "value": "application/json"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650581018096,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_e0ea4a10599c4723b9584ba54764f2a6",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650581018096,
-      "created": 1650581018096,
-      "url": "{{ base_url }}/users/:uid",
-      "name": "Retrieve user data",
-      "description": "Check api is active",
-      "method": "GET",
-      "body": {},
-      "parameters": [
-        {
-          "name": "uid",
-          "disabled": false,
-          "value": "string"
-        }
-      ],
-      "headers": [
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650581018096,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_c575325e45a8457b8df021d7e7716f6b",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650581018097,
-      "created": 1650581018097,
-      "url": "{{ base_url }}/ping",
-      "name": "Ping the server",
-      "description": "Check api is active",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Authorization",
-          "disabled": false,
-          "value": "{{ api_key }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1650581018097,
+      "metaSortKey": 700,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -910,34 +256,12 @@
         {
           "name": "Authorization",
           "disabled": false,
-          "value": "{{ api_key }}"
+          "value": "{{ api_key }}",
+          "id": "pair_f54594fe05664424a5657fc12f2977ab"
         }
       ],
       "authentication": {},
-      "metaSortKey": -1650581018097,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_ed46c6480131465cb02d0f9cdc7ba885",
-      "parentId": "wrk_c28fba86c9d4408aa14e4e594852eaae",
-      "modified": 1650581018098,
-      "created": 1650581018098,
-      "url": "{{ base_url }}/auth/login",
-      "name": "login to get the authentication bearer token",
-      "description": "Get your user's token to acess users only protected routes",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [],
-      "authentication": {},
-      "metaSortKey": -1650581018098,
+      "metaSortKey": 300,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
