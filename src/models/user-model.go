@@ -109,7 +109,7 @@ func (u User) CreateSingletonDBAndCollection() {
 func (u *User) Create() (*mongo.InsertOneResult, error) {
 	u.CreateSingletonDBAndCollection()
 
-	insertedRes, err := UsersCollection.InsertOne(services.Mongo.Context, u)
+	insertedRes, err := UsersCollection.InsertOne(context.Background(), u)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -125,14 +125,14 @@ func (u User) ReadAll() []User {
 		//{"name", "uwu"}, // this works, Try it!
 	}
 
-	currsor, err := UsersCollection.Find(services.Mongo.Context, filter)
+	currsor, err := UsersCollection.Find(context.Background(), filter)
 	if err != nil {
 		panic(err)
 	}
 	defer currsor.Close(services.Mongo.Context)
 
 	var users []User
-	currsor.All(services.Mongo.Context, &users)
+	currsor.All(context.Background(), &users)
 
 	return users
 }
@@ -185,7 +185,7 @@ func (u User) CheckUnique() (bool, error) {
 func (u User) RoleData() (Role, error) {
 	filter := bson.M{"_id": u.RoleID}
 
-	res := RolesCollection.FindOne(services.Mongo.Context, filter)
+	res := RolesCollection.FindOne(context.Background(), filter)
 
 	var role Role
 	err := res.Decode(role)
@@ -202,7 +202,7 @@ func (u *User) SetRole() error {
 	filter := bson.D{
 		{"role", u.Role},
 	}
-	res := RolesCollection.FindOne(services.Mongo.Context, filter)
+	res := RolesCollection.FindOne(context.Background(), filter)
 	if err := res.Err(); err != nil {
 		return err
 	}

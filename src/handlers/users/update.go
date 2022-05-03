@@ -3,8 +3,8 @@ package users
 import (
 	stdMsg "GO-API-template/src/helpers/stdMessages"
 	"GO-API-template/src/models"
-	"GO-API-template/src/services"
 	"GO-API-template/src/utils"
+	"context"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
@@ -184,7 +184,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	filter := bson.M{"_id": user.ID}
 	update := bson.M{"$set": user}
 
-	_, err = models.UsersCollection.UpdateOne(services.Mongo.Context, filter, update)
+	_, err = models.UsersCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"status":  "error",

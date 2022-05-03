@@ -54,7 +54,7 @@ func (r Role) CreateSingletonDBAndCollection() {
 func (r Role) Create() (*mongo.InsertOneResult, error) {
 	r.CreateSingletonDBAndCollection()
 
-	insertedRes, err := RolesCollection.InsertOne(services.Mongo.Context, r)
+	insertedRes, err := RolesCollection.InsertOne(context.Background(), r)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -69,14 +69,14 @@ func (r Role) ReadAll() []User {
 		//{"name", "uwu"}, // this works, Try it!
 	}
 
-	currsor, err := RolesCollection.Find(services.Mongo.Context, filter)
+	currsor, err := RolesCollection.Find(context.Background(), filter)
 	if err != nil {
 		panic(err)
 	}
 	defer currsor.Close(services.Mongo.Context)
 
 	var users []User
-	currsor.All(services.Mongo.Context, &users)
+	currsor.All(context.Background(), &users)
 
 	return users
 }

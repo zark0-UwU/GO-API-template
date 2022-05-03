@@ -2,8 +2,8 @@ package users
 
 import (
 	"GO-API-template/src/models"
-	"GO-API-template/src/services"
 	"GO-API-template/src/utils"
+	"context"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
@@ -68,7 +68,7 @@ func DeleteUser(c *fiber.Ctx) error {
 	}
 
 	filter := bson.M{"_id": user.ID.Hex()}
-	deleted, err := models.UsersCollection.DeleteOne(services.Mongo.Context, filter)
+	deleted, err := models.UsersCollection.DeleteOne(context.Background(), filter)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Something went wron while deleting the user", "data": nil})
 	}
