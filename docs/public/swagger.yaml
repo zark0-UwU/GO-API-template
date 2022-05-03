@@ -1,3 +1,9 @@
+openapi: 3.1.0
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 basePath: /v1
 definitions:
   models.User:
@@ -96,13 +102,6 @@ paths:
       consumes:
       - application/json
       description: Register a new user
-      parameters:
-      - description: initial data for the user
-        in: body
-        name: registerData
-        required: true
-        schema:
-          $ref: '#/definitions/models.User'
       produces:
       - application/json
       responses:
@@ -129,12 +128,8 @@ paths:
       - application/json
       description: delete user completely
       parameters:
-      - description: password of the user to delete, not required if user is admin
-        in: body
-        name: password
-        schema:
-          $ref: '#/definitions/users.PasswordInput'
-      - description: User ID
+      - description: User ID or username
+        schema: string
         in: path
         name: uid
         required: true
@@ -166,7 +161,8 @@ paths:
       - application/json
       description: Check api is active
       parameters:
-      - description: uid string
+      - description: uid string or username
+        schema: string
         in: query
         name: uid
         required: true
@@ -198,14 +194,8 @@ paths:
       - application/json
       description: Update user info
       parameters:
-      - description: data to update, currently only allows to update the fullName
-          field
-        in: body
-        name: updateUserData
-        required: true
-        schema:
-          $ref: '#/definitions/models.User'
-      - description: User ID
+      - description: User ID or username
+        schema: string
         in: path
         name: uid
         required: true
@@ -232,9 +222,3 @@ paths:
       security:
       - BearerAuth: []
       summary: update user
-securityDefinitions:
-  BearerAuth:
-    in: header
-    name: Authorization
-    type: apiKey
-swagger: "2.0"
