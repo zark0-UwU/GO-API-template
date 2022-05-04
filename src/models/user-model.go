@@ -14,16 +14,16 @@ import (
 
 type User struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Username string             `bson:"username,omitempty" json:"username"`
-	Email    string             `bson:"email,omitempty" json:"email"`
-	Password string             `bson:"password,omitempty" json:"password"`
-	Name     string             `bson:"name,omitempty" json:"name"`
-	Role     string             `bson:"role,omitempty" json:"role"`
-	RoleID   primitive.ObjectID `bson:"roleID,omitempty" json:"roleID"`
+	Username string             `bson:"username" json:"username"`
+	Email    string             `bson:"email" json:"email"`
+	Password string             `bson:"password" json:"password"`
+	Name     string             `bson:"name" json:"name"`
+	Role     string             `bson:"role" json:"role"`
+	RoleID   primitive.ObjectID `bson:"roleID" json:"roleID"`
 	// Tokens list is only used to be able to block the token later by placing said token onto the BlockedTokens list
-	Tokens map[string]bool `bson:"tokens,omitempty" json:"tokens"`
+	Tokens map[string]bool `bson:"tokens" json:"tokens"`
 	// Any attempt to use the tokens stored here, will be blocked
-	BlockedTokens map[string]bool `bson:"blockedTokens,omitempty" json:"blockedTokens"`
+	BlockedTokens map[string]bool `bson:"blockedTokens" json:"blockedTokens"`
 }
 
 //? The plurificated interfaces of the models are probably useless AAAND anoying
@@ -35,30 +35,30 @@ type Users interface {
 
 // basic reduced userdata viewable by anyone to use on users listings
 type UserMinimal struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Username string             `bson:"username,omitempty" json:"username"`
-	Role     string             `bson:"role,omitempty" json:"role"`
+	ID       primitive.ObjectID `bson:"_id" json:"id"`
+	Username string             `bson:"username" json:"username"`
+	Role     string             `bson:"role" json:"role"`
 }
 
 // userdata viewable by anyone
 type userPublic struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Username string             `bson:"username,omitempty" json:"username"`
-	Role     string             `bson:"role,omitempty" json:"role"`
+	ID       primitive.ObjectID `bson:"_id" json:"id"`
+	Username string             `bson:"username" json:"username"`
+	Role     string             `bson:"role" json:"role"`
 }
 
 // User data only shown to the user
 type userPrivate struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Username string             `bson:"username,omitempty" json:"username"`
-	Email    string             `bson:"email,omitempty" json:"email"`
-	Name     string             `bson:"name,omitempty" json:"name"`
-	Role     string             `bson:"role,omitempty" json:"role"`
-	//RoleID   primitive.ObjectID `bson:"roleID,omitempty" json:"roleID"`
+	ID       primitive.ObjectID `bson:"_id" json:"id"`
+	Username string             `bson:"username" json:"username"`
+	Email    string             `bson:"email" json:"email"`
+	Name     string             `bson:"name" json:"name"`
+	Role     string             `bson:"role" json:"role"`
+	//RoleID   primitive.ObjectID `bson:"roleID" json:"roleID"`
 	// Tokens list is only used to be able to block the token later by placing said token onto the BlockedTokens list
-	Tokens map[string]bool `bson:"tokens,omitempty" json:"tokens"`
+	Tokens map[string]bool `bson:"tokens" json:"tokens"`
 	// Any attempt to use the tokens stored here, will be blocked
-	BlockedTokens map[string]bool `bson:"blockedTokens,omitempty" json:"blockedTokens"`
+	BlockedTokens map[string]bool `bson:"blockedTokens" json:"blockedTokens"`
 }
 
 var UsersCollection *mongo.Collection
@@ -188,7 +188,7 @@ func (u User) RoleData() (Role, error) {
 	res := RolesCollection.FindOne(context.Background(), filter)
 
 	var role Role
-	err := res.Decode(role)
+	err := res.Decode(&role)
 
 	if err != nil {
 		return role, err
@@ -207,7 +207,7 @@ func (u *User) SetRole() error {
 		return err
 	}
 	var role Role
-	err := res.Decode(role)
+	err := res.Decode(&role)
 
 	if err == nil {
 		u.RoleID = role.ID
@@ -228,7 +228,7 @@ func (u *User) LoadTokens() error {
 	if res.Err() != nil {
 		return res.Err()
 	}
-	err := res.Decode(*u)
+	err := res.Decode(&u)
 	return err // returns nil or the last error
 }
 

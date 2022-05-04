@@ -6,6 +6,7 @@ import (
 	"GO-API-template/src/utils"
 
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // CreateUser register new user
@@ -64,8 +65,11 @@ func CreateUser(c *fiber.Ctx) error {
 	err = user.SetRole()
 
 	// lock tokens to be empty at user creation
-	user.Tokens = *new(map[string]bool)
-	user.BlockedTokens = *new(map[string]bool)
+	user.Tokens = map[string]bool{}
+	user.BlockedTokens = map[string]bool{}
+
+	// lock id to force generating a new one by the db
+	user.ID = primitive.NilObjectID
 
 	_, err = user.Create()
 	if err != nil {

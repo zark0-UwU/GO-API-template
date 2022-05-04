@@ -8,7 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v2"
-	"github.com/golang-jwt/jwt"
+	jwt "github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -26,7 +26,8 @@ func Auth() fiber.Handler {
 func TokenCheck(c *fiber.Ctx) error {
 
 	// Get Token of the reader's user
-	token := c.Locals("user").(*jwt.Token)
+	tok := c.Locals("user")
+	token := tok.(*jwt.Token)
 	uid := fmt.Sprintf("%v", token.Claims.(jwt.MapClaims)["uid"])
 
 	var user models.User
@@ -41,7 +42,7 @@ func TokenCheck(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(stdMsg.ErrorDefault("An error ocurred while Authenticating the request", nil))
 	}
 
-	allowed := user.BlockedTokens[token.Raw]
+	allowed := !user.BlockedTokens[token.Raw]
 	if !allowed {
 		return jwtError(c, nil)
 	}
@@ -51,7 +52,7 @@ func TokenCheck(c *fiber.Ctx) error {
 
 func jwtError(c *fiber.Ctx, err error) error {
 	const ErrJWTMissingOrMalformed = "Missing or malformed JWT"
-	if err.Error() == ErrJWTMissingOrMalformed {
+	if err != nil && err.Error() != ErrJWTMissingOrMalformed {
 		return c.Status(fiber.StatusUnauthorized).
 			JSON(stdMsg.ErrorDefault(ErrJWTMissingOrMalformed, nil))
 	}

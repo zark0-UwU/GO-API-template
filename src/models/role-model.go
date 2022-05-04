@@ -14,20 +14,20 @@ import (
 type Role struct {
 	ID primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	// Role string
-	Role string `bson:"role,omitempty" json:"role"`
+	Role string `bson:"role" json:"role"`
 	// Integer to indicate the permissons level, the lower, the higer perms.
 	// 0 is full acess, this is only used to compare roles
-	Level int `bson:"level,omitempty" json:"level"`
+	Level int `bson:"level" json:"level"`
 	// Permissons object, this is used when performing a specific action
-	Permissons Permissons `bson:"Permissons,omitempty" json:"Permissons"`
+	Permissons Permissons `bson:"Permissons" json:"Permissons"`
 }
 
 // Theese permissons are checked every time a user wants to make an operation restricted to certain roles
 type Permissons struct { //? shuld have a FullAcess flag?
-	ReadUsers  bool `bson:"readUsers,omitempty" json:"readUsers"`
-	UsersAdmin bool `bson:"usersAdmin,omitempty" json:"usersAdmin"`
-	ReadRoles  bool `bson:"readRoles,omitempty" json:"readRoles"`
-	RolesAdmin bool `bson:"rolesAdmin,omitempty" json:"rolesAdmin"`
+	ReadUsers  bool `bson:"readUsers" json:"readUsers"`
+	UsersAdmin bool `bson:"usersAdmin" json:"usersAdmin"`
+	ReadRoles  bool `bson:"readRoles" json:"readRoles"`
+	RolesAdmin bool `bson:"rolesAdmin" json:"rolesAdmin"`
 }
 
 //? The plurificated interfaces of the models are probably useless AAAND anoying

@@ -2,12 +2,15 @@ package auth
 
 import (
 	"GO-API-template/src/config"
+	stdMsg "GO-API-template/src/helpers/stdMessages"
 	"GO-API-template/src/models"
 	"GO-API-template/src/utils"
+	"context"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Login get user and password
@@ -55,10 +58,11 @@ func Login(c *fiber.Ctx) error {
 	// create the claims
 	claims := jwt.MapClaims{
 		"username": userData.Username,
+		"email":    userData.Email,
 		"uid":      userData.ID.Hex(),
 		"role":     userData.Role,
 		"rid":      userData.RoleID.Hex(),
-		"exp":      time.Now().Add(time.Hour * 72).Unix(),
+		"exp":      time.Now().Add(time.Hour * 24 * 5).Unix(),
 	}
 
 	// create token
@@ -70,6 +74,13 @@ func Login(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 	userData.Tokens[t] = true
+
+	filter := bson.M{"_id": userData.ID}
+	update := bson.M{"$set": userData}
+	_, err = models.UsersCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(stdMsg.ErrorDefault("An error ocurred while procesing the request", err))
+	}
 
 	return c.JSON(fiber.Map{"status": "success", "message": "Login sucessful", "token": t})
 }
