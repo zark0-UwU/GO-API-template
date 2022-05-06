@@ -2,7 +2,7 @@ package models
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"GO-API-template/src/services"
 
@@ -111,7 +111,7 @@ func (u *User) Create() (*mongo.InsertOneResult, error) {
 
 	insertedRes, err := UsersCollection.InsertOne(context.Background(), u)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	u.ID = insertedRes.InsertedID.(primitive.ObjectID)
 

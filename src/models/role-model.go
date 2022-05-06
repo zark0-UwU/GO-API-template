@@ -2,7 +2,7 @@ package models
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"GO-API-template/src/services"
 
@@ -56,7 +56,7 @@ func (r Role) Create() (*mongo.InsertOneResult, error) {
 
 	insertedRes, err := RolesCollection.InsertOne(context.Background(), r)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	return insertedRes, err

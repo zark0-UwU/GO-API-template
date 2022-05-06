@@ -1,7 +1,6 @@
 package users
 
 import (
-	"GO-API-template/src/config"
 	"GO-API-template/src/helpers/stdMessages"
 	"GO-API-template/src/models"
 	"context"
@@ -73,8 +72,7 @@ func GetUsers(c *fiber.Ctx) error {
 	r := limmit - offset
 	var next string
 	if r <= len(users) {
-		fmt.Println(c.Request().URI())
-		next = c.BaseURL() + config.BasePath + fmt.Sprintf("/users?o=%v&l=%v", offset+r, limmit+r)
+		next = c.BaseURL() + string(c.Request().URI().Path()) + fmt.Sprintf("/?o=%v&l=%v", offset+r, limmit+r)
 	}
 
 	total, err := models.UsersCollection.CountDocuments(context.Background(), bson.M{})
