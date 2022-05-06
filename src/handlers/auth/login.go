@@ -73,6 +73,9 @@ func Login(c *fiber.Ctx) error {
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
+	if userData.Tokens == nil {
+		userData.Tokens = map[string]bool{}
+	}
 	userData.Tokens[t] = true
 
 	filter := bson.M{"_id": userData.ID}

@@ -139,21 +139,22 @@ func (u User) ReadAll() []User {
 
 // fills the user checking  id, username or email, multiple of them can be used at the same time
 func (u *User) Fill(identity string, id, username, email bool) error {
-	var fields []bson.D
+	var fields = []bson.M{}
 	if id {
 		id, err := primitive.ObjectIDFromHex(identity)
-		if err != nil {
-			fields = append(fields, bson.D{{"_id", id}})
+		if err == nil {
+			fields = append(fields, bson.M{"_id": id})
 		}
 	}
+
 	if username {
-		fields = append(fields, bson.D{{"username", identity}})
+		fields = append(fields, bson.M{"username": identity})
 	}
 	if email {
-		fields = append(fields, bson.D{{"email", identity}})
+		fields = append(fields, bson.M{"email": identity})
 	}
 
-	filter := bson.D{{"$or", fields}}
+	filter := bson.M{"$or": fields}
 
 	res := UsersCollection.FindOne(context.Background(), filter)
 	if err := res.Err(); err != nil {

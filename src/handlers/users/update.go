@@ -5,10 +5,9 @@ import (
 	"GO-API-template/src/models"
 	"GO-API-template/src/utils"
 	"context"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt"
+	jwt "github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -43,19 +42,50 @@ func UpdateUser(c *fiber.Ctx) error {
 	identity := c.Params("uid")
 	// get the data of the user we want to modify
 	var user models.User
-	user.Fill(identity, true, true, false)
+	err := user.Fill(identity, true, true, false)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(
+			stdMsg.ErrorDefault(
+				"could not find the requested user with identificator: "+identity,
+				err.Error(),
+			))
+	}
+	// Role of the user to be modified
+	userRole, err := user.RoleData()
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(
+			stdMsg.ErrorDefault(
+				"could not find the users's role with ID: "+user.RoleID.Hex(),
+				err.Error(),
+			))
+	}
+
 	// Token of the editor's user
 	token := c.Locals("user").(*jwt.Token)
-	editorUID := fmt.Sprintf("%v", token.Claims.(jwt.MapClaims)["uid"])
+	editorUID := token.Claims.(jwt.MapClaims)["uid"].(string)
 
 	// Get the editor's data
 	var editorUser models.User
-	editorUser.Fill(editorUID, true, false, false)
+	err = editorUser.Fill(editorUID, true, false, false)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(
+			stdMsg.ErrorDefault(
+				"could not find the editor's user with ID: "+editorUID,
+				err.Error(),
+			))
+	}
 	var editorRole models.Role
-	editorRole.Fill(editorUser.RoleID.Hex(), true, false)
+	err = editorRole.Fill(editorUser.RoleID.Hex(), true, false)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(
+			stdMsg.ErrorDefault(
+				"could not find the editor's role with ID: "+editorUser.RoleID.Hex(),
+				err.Error(),
+			))
+	}
 
 	// check if editor is authorised to do the operation
-	if user.ID.Hex() != editorUID {
+	if user.ID.Hex() != editorUser.ID.Hex() {
 		// Parametrized permissons
 		if !editorRole.Permissons.UsersAdmin {
 			/*
@@ -81,11 +111,25 @@ func UpdateUser(c *fiber.Ctx) error {
 				"data":    nil,
 			})
 		}
+
+		if editorRole.Level >= userRole.Level { // the lower the number the higher the permissons are
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"status":  "error",
+				"message": "failed to update the user, Your lole permissons level is not high enouth to edit this role.",
+				"data":    nil,
+			})
+		}
 	}
 
 	// Authenticated & autorized
 
-	// ————————Validate fields to be updated———————————
+	/*
+	 ———————— Validate fields to be updated, writes changes into user ———————————
+	 Anything not explicitly written here to user will not be passed to the db
+
+	 							uui >> user
+
+	*/
 
 	// Special field role requires aditional autorization
 	if uui.Role != "" {
@@ -107,12 +151,19 @@ func UpdateUser(c *fiber.Ctx) error {
 			)
 		}
 		var role models.Role
-		role.Fill(user.RoleID.Hex(), true, false)
+		err = role.Fill(user.RoleID.Hex(), true, false)
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).JSON(
+				stdMsg.ErrorDefault(
+					"could not find the original role for the user, with ID: "+user.RoleID.Hex(),
+					err.Error(),
+				))
+		}
 
-		// check if editor can edit this user's role by role level
-		if role.Level <= editorRole.Level {
+		// check if editor can edit this user's role by role level, the lower the more permissons
+		if role.Level < editorRole.Level {
 			return c.Status(fiber.StatusForbidden).JSON(
-				stdMsg.ErrorDefault("You cant set the the role of this user", nil),
+				stdMsg.ErrorDefault("You cant set the the role of this user UwU", nil),
 			)
 		}
 		// check if editor can edit this user's role by role permissons
@@ -177,8 +228,15 @@ func UpdateUser(c *fiber.Ctx) error {
 		user.Password = hash
 	}
 
-	if uui.Name != "" {
+	if uui.Name != "" || user.Name != uui.Name {
 		user.Name = uui.Name
+	}
+
+	if uui.BlockedTokens != nil {
+		user.BlockedTokens = uui.BlockedTokens
+	}
+	if uui.Tokens != nil {
+		user.Tokens = uui.Tokens
 	}
 
 	filter := bson.M{"_id": user.ID}

@@ -19,7 +19,7 @@ type Role struct {
 	// 0 is full acess, this is only used to compare roles
 	Level int `bson:"level" json:"level"`
 	// Permissons object, this is used when performing a specific action
-	Permissons Permissons `bson:"Permissons" json:"Permissons"`
+	Permissons Permissons `bson:"permissons" json:"permissons"`
 }
 
 // Theese permissons are checked every time a user wants to make an operation restricted to certain roles
@@ -47,7 +47,7 @@ func (r Role) CreateSingletonDBAndCollection() {
 		rolesModelDB = services.Mongo.DBs["mainDB"]
 	}
 	if RolesCollection == nil {
-		RolesCollection = rolesModelDB.Collection("users")
+		RolesCollection = rolesModelDB.Collection("roles")
 	}
 }
 
@@ -82,18 +82,19 @@ func (r Role) ReadAll() []User {
 }
 
 func (r *Role) Fill(identity string, id, role bool) error {
-	var fields []bson.D
+	var fields = []bson.M{}
 	if id {
 		id, err := primitive.ObjectIDFromHex(identity)
 		if err == nil {
-			fields = append(fields, bson.D{{"_id", id}})
+			fields = append(fields, bson.M{"_id": id})
 		}
 	}
+
 	if role {
-		fields = append(fields, bson.D{{"role", identity}})
+		fields = append(fields, bson.M{"role": identity})
 	}
 
-	filter := bson.D{{"$or", fields}}
+	filter := bson.M{"$or": fields}
 
 	res := RolesCollection.FindOne(context.Background(), filter)
 	if err := res.Err(); err != nil {
