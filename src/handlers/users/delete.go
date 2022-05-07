@@ -2,7 +2,6 @@ package users
 
 import (
 	"GO-API-template/src/models"
-	"GO-API-template/src/utils"
 	"context"
 	"fmt"
 
@@ -10,10 +9,6 @@ import (
 	jwt "github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson"
 )
-
-type PasswordInput struct {
-	Password string `json:"password"`
-}
 
 // DeleteUser delete user
 // @Summary      delete user
@@ -29,11 +24,6 @@ type PasswordInput struct {
 // @Failure      500  {object}  interface{}
 // @Router       /users/{uid} [delete]
 func DeleteUser(c *fiber.Ctx) error {
-	// password input
-	var pIn PasswordInput
-	if err := c.BodyParser(&pIn); err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
-	}
 
 	// Identity of the user to modify
 	identity := c.Params("uid")
@@ -63,11 +53,7 @@ func DeleteUser(c *fiber.Ctx) error {
 
 	// Authenticated & autorized
 
-	if !utils.CheckHash(pIn.Password, user.Password) {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{"status": "error", "message": "Not valid user", "data": nil})
-	}
-
-	filter := bson.M{"_id": user.ID.Hex()}
+	filter := bson.M{"_id": user.ID}
 	deleted, err := models.UsersCollection.DeleteOne(context.Background(), filter)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Something went wron while deleting the user", "data": nil})
@@ -75,7 +61,7 @@ func DeleteUser(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"status":  "success",
-		"message": string(deleted.DeletedCount) + " user successfully deleted",
-		"data":    user,
+		"message": fmt.Sprintf("%v user successfully deleted", deleted.DeletedCount),
+		"data":    user.Private(),
 	})
 }
