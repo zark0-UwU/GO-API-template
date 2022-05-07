@@ -14,6 +14,6 @@ func AuthRoute(r *fiber.Router) {
 
 	// Define the subroutes
 	route.Get("/login", auth.Login)                     // get your jwt
-	route.Get("/Renew", middlewares.Auth(), auth.Renew) // Renew your JWT if not blocked // TODO: renew function
+	route.Get("/renew", middlewares.Auth(), auth.Renew) // Renew your JWT if not blocked
 
 }
