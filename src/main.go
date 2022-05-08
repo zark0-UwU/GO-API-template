@@ -3,6 +3,8 @@ package src
 import (
 	"GO-API-template/src/config"
 	"GO-API-template/src/loaders"
+
+	"github.com/lightstep/otel-launcher-go/launcher"
 )
 
 // @title           GO API template
@@ -23,6 +25,14 @@ import (
 // @description                 Description for what is this security definition being used
 // @tokenUrl                    https://kaomoji.zark0.dev/v1/auth/login
 func Start() {
+	//Open Telemetry setup
+	ls := launcher.ConfigureOpentelemetry(
+		launcher.WithServiceName("Go-API-Template"),
+		launcher.WithAccessToken(config.Config("OTEL-LIGHT-STEP-KEY")),
+	)
+	defer ls.Shutdown()
+	// END Open Telemetry setup
+
 	serverPort := config.Config("PORT")
 	// Try connecting to the database (loads and init)
 	cancelCtx := loaders.LoadMongo()

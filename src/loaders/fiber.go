@@ -1,6 +1,7 @@
 package loaders
 
 import (
+	"GO-API-template/src/middlewares"
 	"GO-API-template/src/routes"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,6 +20,7 @@ func LoadFiber() *fiber.App {
 	app := fiber.New(cfg)
 
 	//* here is where middlewares used in all routes should be mounted
+	app.Use(middlewares.OpenTelemery()) // use open-telemetry middleware with custom config
 	app.Use(recover.New())
 	app.Use(cors.New())
 	app.Use(logger.New())
