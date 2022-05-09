@@ -37,6 +37,11 @@ func GetUser(c *fiber.Ctx) error {
 		})
 	}
 
+	// Use public profile if the user is not authenticated
+	if !c.Locals("Authenticated").(bool) {
+		return c.JSON(fiber.Map{"status": "success", "message": "User found", "user": user.Public()})
+	}
+
 	// Get Token of the reader's user
 	token := c.Locals("user").(*jwt.Token)
 	editorUID := fmt.Sprintf("%v", token.Claims.(jwt.MapClaims)["uid"])

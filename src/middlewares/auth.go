@@ -22,6 +22,16 @@ func Auth() fiber.Handler {
 	})
 }
 
+// Optional Authentication, sets var to true or false
+func OptInAuth() fiber.Handler {
+
+	return jwtware.New(jwtware.Config{
+		SigningKey:     []byte(config.Config("JWT_SECRET")),
+		ErrorHandler:   jwtInvalid,
+		SuccessHandler: TokenCheck,
+	})
+}
+
 // ckecks a token to be valid against it's user
 func TokenCheck(c *fiber.Ctx) error {
 
@@ -47,6 +57,7 @@ func TokenCheck(c *fiber.Ctx) error {
 		return jwtError(c, nil)
 	}
 
+	c.Locals("Authenticated", true)
 	return c.Next()
 }
 
@@ -55,6 +66,17 @@ func jwtError(c *fiber.Ctx, err error) error {
 	if err != nil && err.Error() != ErrJWTMissingOrMalformed {
 		return c.Status(fiber.StatusUnauthorized).
 			JSON(stdMsg.ErrorDefault(ErrJWTMissingOrMalformed, nil))
+	}
+	return c.Status(fiber.StatusUnauthorized).
+		JSON(stdMsg.ErrorDefault("Invalid or expired JWT", nil))
+}
+
+// ckecks a token to be valid against it's user, if not inform of it and continue
+func jwtInvalid(c *fiber.Ctx, err error) error {
+	c.Locals("Authenticated", false)
+	const ErrJWTMissingOrMalformed = "Missing or malformed JWT"
+	if err != nil && err.Error() == ErrJWTMissingOrMalformed {
+		return c.Next()
 	}
 	return c.Status(fiber.StatusUnauthorized).
 		JSON(stdMsg.ErrorDefault("Invalid or expired JWT", nil))

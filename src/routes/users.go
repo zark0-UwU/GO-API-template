@@ -15,7 +15,7 @@ func UsersRoute(r *fiber.Router) {
 	// Define the subroutes
 	route.Post("/", users.CreateUser)                           // Create
 	route.Get("/", users.GetUsers)                              // Create
-	route.Get("/:uid", middlewares.Auth(), users.GetUser)       // Read
+	route.Get("/:uid", middlewares.OptInAuth(), users.GetUser)  // Read
 	route.Patch("/:uid", middlewares.Auth(), users.UpdateUser)  // Update
 	route.Delete("/:uid", middlewares.Auth(), users.DeleteUser) // Delete
 
