@@ -37,11 +37,11 @@ func (m *MongoServiceData) getMongoClient() (*mongo.Client, *context.Context, *c
 	if uri == "" {
 		uri = "mongodb://localhost:27017" //default to a local development db
 	}
-	user := config.Config("DB_URI")
+	user := config.Config("DB_USER")
 	if user == "" {
 		user = "root" //default to a local development db credentials
 	}
-	passwd := config.Config("DB_URI")
+	passwd := config.Config("DB_PASS")
 	if passwd == "" {
 		passwd = "example" //default to a local development db credentials
 	}
