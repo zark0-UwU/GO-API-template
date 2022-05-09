@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"GO-API-template/src/config"
+	cfg "GO-API-template/src/config"
 	stdMsg "GO-API-template/src/helpers/stdMessages"
 	"GO-API-template/src/models"
 	"fmt"
@@ -16,7 +16,7 @@ import (
 func Auth() fiber.Handler {
 
 	return jwtware.New(jwtware.Config{
-		SigningKey:     []byte(config.Config("JWT_SECRET")),
+		SigningKey:     []byte(cfg.Config.JWT.Secret),
 		ErrorHandler:   jwtError,
 		SuccessHandler: TokenCheck,
 	})
@@ -26,7 +26,7 @@ func Auth() fiber.Handler {
 func OptInAuth() fiber.Handler {
 
 	return jwtware.New(jwtware.Config{
-		SigningKey:     []byte(config.Config("JWT_SECRET")),
+		SigningKey:     []byte(cfg.Config.JWT.Secret),
 		ErrorHandler:   jwtInvalid,
 		SuccessHandler: TokenCheck,
 	})

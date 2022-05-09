@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"GO-API-template/src/config"
+	cfg "GO-API-template/src/config"
 	stdMsg "GO-API-template/src/helpers/stdMessages"
 	"GO-API-template/src/models"
 	"context"
@@ -47,7 +47,7 @@ func Renew(c *fiber.Ctx) error {
 	tokenRenewed := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Generate encoded token and send it as response
-	t, err := tokenRenewed.SignedString([]byte(config.Config("JWT_SECRET")))
+	t, err := tokenRenewed.SignedString([]byte(cfg.Config.JWT.Secret))
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}

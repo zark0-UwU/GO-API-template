@@ -4,20 +4,36 @@ import (
 	"github.com/joho/godotenv"
 
 	"log"
-	"os"
 )
 
-const BasePath = "/v1"
+type Configuration struct {
+	Service *serviceConfig
+	Mongo   *mongoConfig
+	JWT     *bearerJWTConfig
+	OpenTel *openTelemetryConfig
+}
 
-//TODO: Make a struct (on its own file) and and instance for basic important setting
-//TODO: Make a function to refresh each setting from the struct above
-// dinamically get the variables, so
-func Config(key string) string {
-	err := godotenv.Load(".env")
+var Config Configuration
 
-	if err != nil {
-		log.Println("Cannot load given key: " + key)
+// loads all the config onto Configuration struct
+func Load(forceReload ...bool) *Configuration {
+	if forceReload[0] {
+		LoadEnvFile()
 	}
+	Config.Service = Service(forceReload[0])
+	Config.Mongo = MongoDB(forceReload[0])
+	Config.JWT = JWT(forceReload[0])
+	Config.OpenTel = OpenTel(forceReload[0])
 
-	return os.Getenv(key)
+	return &Config
+}
+
+// dinamically get the variables, so
+func LoadEnvFile() bool {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Println("Could not load ENV vars from file")
+		return false
+	}
+	return true
 }

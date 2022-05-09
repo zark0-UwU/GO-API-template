@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"GO-API-template/src/config"
+	cfg "GO-API-template/src/config"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -32,19 +32,9 @@ func (m *MongoServiceData) getMongoClient() (*mongo.Client, *context.Context, *c
 	m.CancelContext = cancelContext
 
 	// MongoDB connection uri and credentials
-	//! BE CAREFULL can be dangerous on certain enviroments if not controlled propertly
-	uri := config.Config("DB_URI")
-	if uri == "" {
-		uri = "mongodb://localhost:27017" //default to a local development db
-	}
-	user := config.Config("DB_USER")
-	if user == "" {
-		user = "root" //default to a local development db credentials
-	}
-	passwd := config.Config("DB_PASS")
-	if passwd == "" {
-		passwd = "example" //default to a local development db credentials
-	}
+	uri := cfg.Config.Mongo.URI
+	user := cfg.Config.Mongo.User
+	passwd := cfg.Config.Mongo.Pass
 
 	// login will still be done on admin database
 	//TODO: env var to attempt login on specific db or db set to
@@ -72,7 +62,7 @@ func (m *MongoServiceData) getMongoClient() (*mongo.Client, *context.Context, *c
 func (m *MongoServiceData) initDBs() *map[string]*mongo.Database {
 	m.DBs = map[string]*mongo.Database{
 		//* here the databases in use will be stored, usually just one
-		"mainDB": m.Client.Database(config.Config("DB_1_NAME")),
+		"mainDB": m.Client.Database(cfg.Config.Mongo.DBs[0]),
 	}
 	return &m.DBs
 }
