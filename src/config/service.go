@@ -14,8 +14,10 @@ func Service(reload ...bool) *serviceConfig {
 	if (serviceConfig{}) != service && !reload[0] {
 		return &service
 	}
-	service = serviceConfig{
-		Port: os.Getenv("PORT"),
+
+	service.Port = os.Getenv("PORT")
+	if service.Port == "" {
+		service.Port = "3000"
 	}
 	return &service
 }
